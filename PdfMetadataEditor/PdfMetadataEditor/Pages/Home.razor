@@ -1,0 +1,397 @@
+﻿@page "/"
+@using PdfMetadataEditor.Model
+
+@inject IJSRuntime JS;
+@inject IURLService URL;
+
+<FluentSplitter Orientation="Orientation.Horizontal" BarSize="14" Panel1Size="40%" Panel1MinSize="30%" Panel2MinSize="45%" Style="height: 100%">
+    <Panel1>
+        <FluentToolbar Class="toolbar" id="toolbar-fluent-components">
+            <FluentButton Disabled="tocButtonsDisabled" OnClick="addNewEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkAdd())" Title="New Outline Entry"></FluentButton>
+            <FluentButton Disabled="tocButtonsDisabled" OnClick="deleteEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())" Title="Delete Selected Outline Entry"></FluentButton>
+            <FluentButton id="confirmButton" Disabled="tocButtonsDisabled" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())"
+            BackgroundColor="var(--error)"
+            Title="Delete Outline Tree"
+            @onclick="() => isConfirmPopoverOpen = !isConfirmPopoverOpen" />
+            <FluentButton OnClick="SaveAndReloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Save())" Title="Save Changes"></FluentButton>
+            <FluentButton OnClick="DownloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Title="Save PDF to Disk"></FluentButton>
+            <FluentCheckbox @bind-Value=disablePageJump Label="Disable Page Jump" />
+            <FluentButton slot="end" OnClick="() => isHelpOverlayOpen = true" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Question())" Title="Help"></FluentButton>
+        </FluentToolbar>
+
+        <FluentTabs OnTabChange="onTabChanged">
+            <FluentTab Label="TOC Editor" Icon="@(new Icons.Regular.Size24.DocumentTextLink())" Id="tab-1">
+                <Tree @ref="tree"
+                DefaultExpandAll
+                Draggable
+                BlockNode
+                ShowLeafIcon="false"
+                ShowLine="true"
+                DataSource="entries"
+                TitleExpression="x => x.DataItem.Heading"
+                ChildrenExpression="x => x.DataItem.SubHeadings"
+                IsLeafExpression="x => x.DataItem.SubHeadings?.Count == 0"
+                KeyExpression="x => x.DataItem.Id"
+                TItem="Entry"
+                OnSelect="onSelect"
+                OnDrop="onDrop">
+
+                    <TitleTemplate>
+                        <GridRow Wrap="true">
+                            <GridCol Flex=@("auto")>
+                                @if (lastEditNodeId == context.DataItem.Id)
+                                {
+                                    <AntDesign.TextArea OnKeyDown="onEscDown" AutoSize="true" BindOnInput="true" Rows="1" @bind-Value="context.DataItem.Heading" AutoFocus="true" @onblur="() => onEditEnd()" />
+                                }
+                                else
+                                {
+                                    <span @onclick="() => onClickGoToPage(context.DataItem.PageNo)" @ondblclick="() => onDoubleClick2(context.DataItem.Id)">@context.DataItem.Heading</span>
+                                }
+                            </GridCol>
+                            <GridCol Flex=@("100px")>
+                                <AntDesign.InputNumber @bind-Value="context.DataItem.PageNo" Min="1" PlaceHolder="Page Number" />
+                            </GridCol>
+                        </GridRow>
+                    </TitleTemplate>
+                </Tree>
+            </FluentTab>
+            <FluentTab Label="Metadata Editor" Icon="@(new Icons.Regular.Size24.TextColumnThree())" Id="tab-2">
+                <FluentStack Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentTextArea Label="Title:" @bind-Value="@metadata.Title" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
+                    <FluentTextArea Label="Author:" @bind-Value="@metadata.Author" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
+                    <FluentTextArea Label="Subject:" @bind-Value="@metadata.Subject" Cols="115" Rows="4" Resize="TextAreaResize.Vertical" Spellcheck="true" />
+                    <FluentTextArea Label="Keywords:" @bind-Value="@metadata.Keywords" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
+                    <FluentTextArea Label="Creator:" @bind-Value="@metadata.Creator" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
+                    <FluentTextArea Label="Producer:" @bind-Value="@metadata.Producer" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
+                </FluentStack>
+            </FluentTab>
+        </FluentTabs>
+    </Panel1>
+    <Panel2>
+        <FluentInputFile Id="my-file-uploader"
+        Mode="InputFileMode.Stream"
+        Multiple="false"
+        MaximumFileCount="1"
+        MaximumFileSize="@(250*1024*1024)"
+        Accept=".pdf"
+        OnCompleted="@OnFileUploadCompletedAsync"
+        Style="height: 110px; margin-left: 10px">
+            <ChildContent>
+                <label style="margin-top: 10px" for="my-file-uploader">
+                    <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
+                </label>
+
+                <div>
+                    Drag PDF file here you wish to edit,
+                    or <label for="my-file-uploader">browse</label>
+                    for them.
+                    <br />
+                </div>
+            </ChildContent>
+        </FluentInputFile>
+        @if (showPdfViewer)
+        {
+            <iframe src="@blobUri" @key="@blobUri" style="width: 95%; height: 80%; margin: 16px" frameborder="0"></iframe>
+        }
+
+    </Panel2>
+</FluentSplitter>
+
+<FluentOverlay @bind-Visible=@isSaving @key="@isSaving"
+Opacity="0.4"
+BackgroundColor="#7c8491"
+FullScreen="true"
+Dismissable="false"
+PreventScroll=true>
+    <ChildContent>
+        <FluentLabel Weight="FontWeight.Bolder" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
+            Saving Changes...
+        </FluentLabel>
+    </ChildContent>
+</FluentOverlay>
+
+<FluentOverlay @bind-Visible=@isHelpOverlayOpen
+               Opacity="0.4"
+               FullScreen="false"
+               Dismissable="true"
+               PreventScroll=true>
+    <ChildContent>
+        <FluentCard Width="850px" Height="350px">
+            <FluentLabel Style="padding-bottom: 12px" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.H1">Toolbar Help</FluentLabel>
+            <FluentStack Orientation="Orientation.Vertical" >
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkAdd())" Title="New Outline Entry"></FluentButton>
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">Adds a new outline node at the same level after the "selected" node.</FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())" Title="Delete Selected Outline Entry"></FluentButton>
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">Deletes the selected node.</FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())" BackgroundColor="var(--error)" Title="Delete Outline Tree" />
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">Clears the whole outline tree.</FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Save())" Title="Save Changes"></FluentButton>
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">Writes the outline and metadata back to the file and reloads the PDF document.</FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Title="Save PDF to Disk"></FluentButton>
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">Saves the PDF document to PC.</FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentCheckbox Value="true" ReadOnly="true" />
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
+                        <b>Disable Page Jump</b> Controls whether the PDF viewer will jump to the relevant page when the title is clicked in the TOC editor.
+                    </FluentLabel>
+                </FluentStack>
+            </FluentStack>
+        </FluentCard>
+    </ChildContent>
+</FluentOverlay>
+
+<FluentPopover Style="width: 300px;" VerticalThreshold="170" AnchorId="confirmButton" @bind-Open="isConfirmPopoverOpen">
+    <Header>Confirmation</Header>
+    <Body>
+        <FluentLabel>Do you want to clear the outline tree?</FluentLabel>
+    </Body>
+    <Footer>
+        <FluentStack HorizontalAlignment="HorizontalAlignment.Right" Orientation="Orientation.Horizontal">
+            <FluentButton OnClick="clearOutline" Appearance="Appearance.Accent" Title="Yes">Yes</FluentButton>
+            <FluentButton OnClick="() => isConfirmPopoverOpen = false" Title="No">No</FluentButton>
+        </FluentStack>
+    </Footer>
+</FluentPopover>
+
+
+<style>
+    .toolbar {
+        padding-right: 10px;
+        width: 100%;
+    }
+</style>
+
+@code {
+    BlobInProcess? blobInProcess;
+    List<Entry> entries = new();
+    Metadata metadata = new();
+    PdfEditor pdfEditor = new();
+    Tree<Entry>? tree;
+    TreeNode<Entry>? selectedNode;
+
+    byte[]? pdfBytes;
+
+    bool disablePageJump = true;
+    bool isConfirmPopoverOpen = false;
+    bool isHelpOverlayOpen = false;
+    bool isSaving = false;
+    bool showPdfViewer = false;
+    bool tocButtonsDisabled = false;
+
+    int lastPdfPage = 1;
+
+    string lastEditNodeId = string.Empty;
+    string baseBlobUri = string.Empty;
+    string blobUri = string.Empty;
+    string originalFileName = string.Empty;
+
+    private void onDoubleClick(TreeEventArgs<Entry> e)
+    {
+        lastEditNodeId = e.Node.DataItem.Id;
+        StateHasChanged();
+    }
+
+    private void onDoubleClick2(string id)
+    {
+        lastEditNodeId = id;
+        StateHasChanged();
+    }
+
+    private void onDrop(TreeEventArgs<Entry> e) => StateHasChanged();
+
+    private void onEditEnd()
+    {
+        lastEditNodeId = string.Empty;
+        StateHasChanged();
+    }
+
+    private void clearOutline()
+    {
+        isConfirmPopoverOpen = false;
+        entries.Clear();
+        StateHasChanged();
+    }
+
+    private void onEscDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            lastEditNodeId = string.Empty;
+            StateHasChanged();
+        }
+        if (e.CtrlKey & e.Key == "Enter")
+        {
+            lastEditNodeId = string.Empty;
+            StateHasChanged();
+        }
+    }
+
+    private void onSelect(TreeEventArgs<Entry> e)
+    {
+        selectedNode = e.Node;
+    }
+
+    private void onTabChanged(FluentTab tab)
+    {
+        tocButtonsDisabled = tab.Id == "tab-2";
+        StateHasChanged();
+    }
+
+    void onClickGoToPage(int pageNum)
+    {
+        if (!disablePageJump && !string.IsNullOrEmpty(blobUri) & pageNum != lastPdfPage)
+        {
+            blobUri = $"{baseBlobUri}#page={pageNum}";
+            lastPdfPage = pageNum;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateBlobUris()
+    {
+        blobInProcess = await BlobInProcess.CreateAsync(
+            JS,
+            blobParts: new BlobPart[] { pdfBytes! },
+            options: new() { Type = "application/pdf" }
+        );
+        if (!string.IsNullOrEmpty(baseBlobUri))
+        {
+            await URL.RevokeObjectURLAsync(baseBlobUri);
+            baseBlobUri = string.Empty;
+            blobUri = string.Empty;
+        }
+        baseBlobUri = await URL.CreateObjectURLAsync(blobInProcess);
+        blobUri = $"{baseBlobUri}";
+    }
+
+    private async Task InitializePdf()
+    {
+        await Task.Yield();
+        pdfEditor.Create(pdfBytes!);
+        metadata = pdfEditor.GetPdfMetadata();
+        entries = pdfEditor.GetOutline();
+    }
+
+    private async Task SaveAndReloadPdf()
+    {
+        if (pdfEditor.IsCreated)
+        {
+            isSaving = true;
+            await Task.Delay(1);
+            pdfEditor.SetPdfMetadata(metadata);
+            pdfEditor.SetOutline(entries);
+            pdfBytes = pdfEditor.SavePdf();
+            await CreateBlobUris();
+            await InitializePdf();
+            isSaving = false;
+        }
+    }
+
+    private async Task DownloadPdf()
+    {
+        if (!string.IsNullOrEmpty(baseBlobUri))
+        {
+            string baseName = Path.GetFileNameWithoutExtension(originalFileName);
+            string ext = Path.GetExtension(originalFileName);
+            string downloadName = $"{baseName}_Edited{ext}";
+            await JS.InvokeVoidAsync("downloadFile", downloadName, baseBlobUri);
+        }
+    }
+
+    private async Task OnFileUploadCompletedAsync(IEnumerable<FluentInputFileEventArgs> files)
+    {
+        var pdfFile = files.First();
+        originalFileName = pdfFile.Name;
+        pdfBytes = new byte[pdfFile.Stream!.Length];
+        await pdfFile.Stream!.ReadExactlyAsync(pdfBytes);
+        await CreateBlobUris();
+        await InitializePdf();
+        showPdfViewer = true;
+    }
+
+    private void addNewEntry()
+    {
+        if (entries!.Count == 0)
+        {
+            entries.Add(new() { Heading = "Heading 1", PageNo = 1 });
+            return;
+        }
+        if (selectedNode != null)
+        {
+            string id = selectedNode.DataItem.Id;
+            int knownDepth = selectedNode.TreeLevel;
+            var stack = new Stack<(Entry node, List<Entry> parentList, int index, int depth)>();
+
+            for (int i = entries.Count - 1; i >= 0; i--)
+            {
+                stack.Push((entries[i], entries, i, 0));
+            }
+
+            while (stack.Count > 0)
+            {
+                var (node, parentList, index, depth) = stack.Pop();
+                if (depth == knownDepth && node.Id == id)
+                {
+                    parentList.Insert
+                    (
+                        index + 1,
+                        new() { Heading = $"{selectedNode.DataItem.Heading} (Copy)", PageNo = selectedNode.DataItem.PageNo + 1 }
+                    );
+                    StateHasChanged();
+                    return;
+                }
+
+                if (depth < knownDepth && node.SubHeadings != null && node.SubHeadings.Count > 0)
+                {
+                    for (int i = node.SubHeadings.Count - 1; i >= 0; i--)
+                    {
+                        stack.Push((node.SubHeadings[i], node.SubHeadings, i, depth + 1));
+                    }
+                }
+            }
+        }
+    }
+
+    private void deleteEntry()
+    {
+        if (selectedNode != null)
+        {
+            string id = selectedNode.DataItem.Id;
+            int knownDepth = selectedNode.TreeLevel;
+            var stack = new Stack<(Entry node, List<Entry> parentList, int index, int depth)>();
+
+            for (int i = entries!.Count - 1; i >= 0; i--)
+            {
+                stack.Push((entries[i], entries, i, 0));
+            }
+
+            while (stack.Count > 0)
+            {
+                var (node, parentList, index, depth) = stack.Pop();
+                if (depth == knownDepth && node.Id == id)
+                {
+                    parentList.Remove(node);
+                    StateHasChanged();
+                    return;
+                }
+                if (depth < knownDepth && node.SubHeadings != null && node.SubHeadings.Count > 0)
+                {
+                    for (int i = node.SubHeadings.Count - 1; i >= 0; i--)
+                    {
+                        stack.Push((node.SubHeadings[i], node.SubHeadings, i, depth + 1));
+                    }
+                }
+            }
+        }
+    }
+}
