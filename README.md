@@ -2,6 +2,19 @@
 
 Simple Blazor WebAssembly App to Edit PDF Metadata
 
+The app consists of two tabs: TOC Editor and Metadata Editor
+
+## Table of Contents Editor
+
+- In the TOC (Table of Contents) (or Outline) Editor user can either edit the existing outline or create one from scratch.
+- New nodes at any level can created, shifted under any other node. Simply drag and drop tree nodes in order to change the outline.
+- Nodes can be removed.
+- Every node's title and destination page can be altered. Doube click on the title text to enter edit mode, Press Esc or Ctrl+Enter to exit.
+
+## Metadata Editor
+
+- Title, Author, Subject, Keywords, Creator and Producer metadata fields can be edited.
+
 Available at: https://anezih.github.io/PdfMetadataEditor
 
 # Screenshots

@@ -2,6 +2,9 @@ name: gh-pages
 
 on:
   push:
+    paths-ignore:
+      - 'README.md'
+      - 'res/**'
     branches:
       - main
 
