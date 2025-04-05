@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "PdfMetadataEditor",
   "resources": {
-    "hash": "sha256-5D4OM8aZYE36f7LfMwvtEr/ibe/qeXrwck0ZmU9KbHs=",
+    "hash": "sha256-13odWG4i9/YoI5mZCwrjfe8wxbkG3q0O49/NjgmMTDk=",
     "fingerprinting": {
       "AntDesign.s5oqbcocsd.wasm": "AntDesign.wasm",
       "BouncyCastle.Cryptography.q361xss3xf.wasm": "BouncyCastle.Cryptography.wasm",
@@ -38,14 +38,14 @@
       "Microsoft.Extensions.Logging.wmffdm17ee.wasm": "Microsoft.Extensions.Logging.wasm",
       "Microsoft.Extensions.Options.1s4543dsw0.wasm": "Microsoft.Extensions.Options.wasm",
       "Microsoft.Extensions.Primitives.c4l1ao4ovj.wasm": "Microsoft.Extensions.Primitives.wasm",
-      "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.j14l4ccuiz.wasm": "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.wasm",
+      "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.3k7elgpgo9.wasm": "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.wasm",
       "Microsoft.FluentUI.AspNetCore.Components.l264rd0lnm.wasm": "Microsoft.FluentUI.AspNetCore.Components.wasm",
       "Microsoft.JSInterop.nectlffdal.wasm": "Microsoft.JSInterop.wasm",
       "Microsoft.JSInterop.WebAssembly.heoad7mujs.wasm": "Microsoft.JSInterop.WebAssembly.wasm",
       "netstandard.utjh694zd5.wasm": "netstandard.wasm",
       "Newtonsoft.Json.afd7przk0l.wasm": "Newtonsoft.Json.wasm",
       "OneOf.t3wicg8dyw.wasm": "OneOf.wasm",
-      "PdfMetadataEditor.206yg76zyx.wasm": "PdfMetadataEditor.wasm",
+      "PdfMetadataEditor.jj9edod1eo.wasm": "PdfMetadataEditor.wasm",
       "System.AppContext.l5oljskqgt.wasm": "System.AppContext.wasm",
       "System.Collections.Concurrent.j237e21qfg.wasm": "System.Collections.Concurrent.wasm",
       "System.Collections.Immutable.uul0hiw9r9.wasm": "System.Collections.Immutable.wasm",
@@ -113,7 +113,7 @@
       "System.Xml.Linq.yiwjknpdq4.wasm": "System.Xml.Linq.wasm",
       "System.Xml.XDocument.rr0c5q73sg.wasm": "System.Xml.XDocument.wasm",
       "dotnet.native.qc447soewa.js": "dotnet.native.js",
-      "dotnet.native.5t3jbgpbga.wasm": "dotnet.native.wasm",
+      "dotnet.native.xops83dfzu.wasm": "dotnet.native.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.runtime.qrl1fuqt3c.js": "dotnet.runtime.js",
       "icudt_CJK.tjcz0u77k5.dat": "icudt_CJK.dat",
@@ -127,7 +127,7 @@
       "dotnet.runtime.qrl1fuqt3c.js": "sha256-ilTXrnUF4HKbIAFVIYlRmX3ryKNZpGUObkWMF0n2Kcg="
     },
     "wasmNative": {
-      "dotnet.native.5t3jbgpbga.wasm": "sha256-9+oA2eJoh2eVMYssHjE65yrgIgxM8dXDLBUQQo+3eYw="
+      "dotnet.native.xops83dfzu.wasm": "sha256-7wo69aMW7zC6OSLwEjxh1tMCYTdROvmVTTZXD4f2fSI="
     },
     "icu": {
       "icudt_CJK.tjcz0u77k5.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -170,14 +170,14 @@
       "Microsoft.Extensions.Logging.wmffdm17ee.wasm": "sha256-6BFb9aslSGYW87UdcEUFKLjzeZqNVinRFt+4G1XhBYQ=",
       "Microsoft.Extensions.Options.1s4543dsw0.wasm": "sha256-cecMU96K0jhnY6RHKrgzXWSbEYha3t6yF9SAiEjtR4A=",
       "Microsoft.Extensions.Primitives.c4l1ao4ovj.wasm": "sha256-1PShggkBv8n0ujn6ACtX3SCZGmjrGODuBD3in9bZN+M=",
-      "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.j14l4ccuiz.wasm": "sha256-t3uDjC59PI1yK2/M/XsvI+HYLoxcasGuDKcp1WQtzF4=",
+      "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.3k7elgpgo9.wasm": "sha256-wyIHC9CcsOYwwRDsFoDXrKcM1M/Sd4jykMQWPvdOd3Y=",
       "Microsoft.FluentUI.AspNetCore.Components.l264rd0lnm.wasm": "sha256-vYb7sS6VOWs8+Ipb7AQ7XcSuobSbShSw2zrSIJgGWCs=",
       "Microsoft.JSInterop.nectlffdal.wasm": "sha256-8RpYCNjD9NPAPlE/nyl9F+ml9n5/Ydj0cRepvpZvTI0=",
       "Microsoft.JSInterop.WebAssembly.heoad7mujs.wasm": "sha256-99wG3VH14sWkwPaF5rX6YAcJvtAhDuqonwihvj2m5HA=",
       "netstandard.utjh694zd5.wasm": "sha256-XvdZwAPM8ciTEqqk0IKZjSD5weqbGWdxxXqcSFvHdYI=",
       "Newtonsoft.Json.afd7przk0l.wasm": "sha256-tnRVg8mHL+pVDt02aKcwQPX5oc31mjB9jIEjR9SWbYE=",
       "OneOf.t3wicg8dyw.wasm": "sha256-Cf+eKPAQzxUxZPpZbRtqNO0yAqCv5I5+BoxofgdvGRY=",
-      "PdfMetadataEditor.206yg76zyx.wasm": "sha256-4v7voDZUYO8VP/79pDCYoRy426cN/wIZ0oGshz2rI7Q=",
+      "PdfMetadataEditor.jj9edod1eo.wasm": "sha256-z8Q2FYByAv8mE9R+02h/x+RpwOvG4mQeMObNBra46cU=",
       "System.AppContext.l5oljskqgt.wasm": "sha256-d+9bvpdkavHDeYJCRhIF13ZO+3v4f7McpYswyuB4EqQ=",
       "System.Collections.Concurrent.j237e21qfg.wasm": "sha256-S7GBCN3+I40CeRG9z0/ChxI3o7fR5UwzH4qBq59tuMs=",
       "System.Collections.Immutable.uul0hiw9r9.wasm": "sha256-Whh7xaJng+qeubwzL2e2MWnXWZQe/uATpi5hOjCzujQ=",
