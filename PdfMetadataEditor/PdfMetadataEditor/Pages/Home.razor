@@ -7,16 +7,18 @@
 <FluentSplitter Orientation="Orientation.Horizontal" BarSize="14" Panel1Size="40%" Panel1MinSize="30%" Panel2MinSize="45%" Style="height: 100%">
     <Panel1>
         <FluentToolbar Class="toolbar" id="toolbar-fluent-components">
-            <FluentButton Disabled="tocButtonsDisabled" OnClick="addNewEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkAdd())" Title="New Outline Entry"></FluentButton>
-            <FluentButton Disabled="tocButtonsDisabled" OnClick="deleteEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())" Title="Delete Selected Outline Entry"></FluentButton>
+            <FluentButton Disabled="tocButtonsDisabled" OnClick="addNewEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkAdd())" Title="New Outline Entry" />
+            <FluentButton Disabled="tocButtonsDisabled" OnClick="deleteEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())" Title="Delete Selected Outline Entry" />
             <FluentButton id="confirmButton" Disabled="tocButtonsDisabled" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())"
             BackgroundColor="var(--error)"
             Title="Delete Outline Tree"
             @onclick="() => isConfirmPopoverOpen = !isConfirmPopoverOpen" />
-            <FluentButton OnClick="SaveAndReloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Save())" Title="Save Changes"></FluentButton>
-            <FluentButton OnClick="DownloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Title="Save PDF to Disk"></FluentButton>
+            <FluentButton Disabled="tocButtonsDisabled" OnClick="expandAll" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowExpandAll())" Title="Expand All" />
+            <FluentButton Disabled="tocButtonsDisabled" OnClick="collapseAll" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowCollapseAll())" Title="Collapse All" />
+            <FluentButton OnClick="SaveAndReloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Save())" Title="Save Changes" />
+            <FluentButton OnClick="DownloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Title="Save PDF to Disk" />
             <FluentCheckbox @bind-Value=disablePageJump Label="Disable Page Jump" />
-            <FluentButton slot="end" OnClick="() => isHelpOverlayOpen = true" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Question())" Title="Help"></FluentButton>
+            <FluentButton slot="end" OnClick="() => isHelpOverlayOpen = true" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Question())" Title="Help" />
         </FluentToolbar>
 
         <FluentTabs OnTabChange="onTabChanged">
@@ -98,11 +100,11 @@
 </FluentSplitter>
 
 <FluentOverlay @bind-Visible=@isSaving @key="@isSaving"
-Opacity="0.4"
-BackgroundColor="#7c8491"
-FullScreen="true"
-Dismissable="false"
-PreventScroll=true>
+               Opacity="0.4"
+               BackgroundColor="#7c8491"
+               FullScreen="true"
+               Dismissable="false"
+               PreventScroll=true>
     <ChildContent>
         <FluentLabel Weight="FontWeight.Bolder" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
             Saving Changes...
@@ -116,7 +118,7 @@ PreventScroll=true>
                Dismissable="true"
                PreventScroll=true>
     <ChildContent>
-        <FluentCard Width="850px" Height="350px">
+        <FluentCard Width="850px" Height="425px">
             <FluentLabel Style="padding-bottom: 12px" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.H1">Toolbar Help</FluentLabel>
             <FluentStack Orientation="Orientation.Vertical" >
                 <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
@@ -130,6 +132,14 @@ PreventScroll=true>
                 <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
                     <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())" BackgroundColor="var(--error)" Title="Delete Outline Tree" />
                     <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">Clears the whole outline tree.</FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowExpandAll())" Title="Expand All" />
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">Expands all nodes.</FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowCollapseAll())" Title="Collapse All" />
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">Collapses all nodes.</FluentLabel>
                 </FluentStack>
                 <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
                     <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Save())" Title="Save Changes"></FluentButton>
@@ -168,6 +178,11 @@ PreventScroll=true>
     .toolbar {
         padding-right: 10px;
         width: 100%;
+        position: sticky;
+        top: 1px;
+        z-index: 5;
+        border: 1px dotted var(--accent-fill-rest);
+        border-radius: 5px;
     }
 </style>
 
@@ -195,6 +210,12 @@ PreventScroll=true>
     string blobUri = string.Empty;
     string originalFileName = string.Empty;
 
+    private void collapseAll()
+    {
+        if (tree != null)
+            tree.CollapseAll();
+    }
+
     private void onDoubleClick(TreeEventArgs<Entry> e)
     {
         lastEditNodeId = e.Node.DataItem.Id;
@@ -213,6 +234,12 @@ PreventScroll=true>
     {
         lastEditNodeId = string.Empty;
         StateHasChanged();
+    }
+
+    private void expandAll()
+    {
+        if (tree != null)
+            tree.ExpandAll();
     }
 
     private void clearOutline()

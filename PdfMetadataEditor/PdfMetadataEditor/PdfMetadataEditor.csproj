@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-	<Authors>https://github.com/anezih</Authors>
-	<Version>0.1.0</Version>
+    <Authors>https://github.com/anezih</Authors>
+    <Version>0.1.0</Version>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-	<RunAOTCompilation>true</RunAOTCompilation>
+	  <RunAOTCompilation>true</RunAOTCompilation>
     <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
   </PropertyGroup>
 
