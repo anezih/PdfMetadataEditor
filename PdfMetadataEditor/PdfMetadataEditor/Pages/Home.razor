@@ -1,4 +1,7 @@
 ﻿@page "/"
+@using PdfMetadataEditor.Backends
+@using PdfMetadataEditor.Enum
+@using PdfMetadataEditor.Interface
 @using PdfMetadataEditor.Model
 
 @inject IJSRuntime JS;
@@ -18,6 +21,12 @@
             <FluentButton OnClick="SaveAndReloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Save())" Title="Save Changes" />
             <FluentButton OnClick="DownloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Title="Save PDF to Disk" />
             <FluentCheckbox @bind-Value=disablePageJump Label="Disable Page Jump" />
+            <FluentInputLabel ForId="s1" Orientation="Orientation.Horizontal">Backend</FluentInputLabel>
+            <FluentSelect Width="18%" Id="s1" @bind-Disabled=isEditorInitialized SelectedOptionChanged="onBackendSelectionChanged"
+                            Items="@backendOptions"
+                            TOption="Option<PdfEditorBackendEnum>"
+                            OptionText="@(o => o.Text)"
+                            OptionValue="@(o => o.Value.ToString())" />
             <FluentButton slot="end" OnClick="() => isHelpOverlayOpen = true" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Question())" Title="Help" />
         </FluentToolbar>
 
@@ -64,7 +73,7 @@
                     <FluentTextArea Label="Subject:" @bind-Value="@metadata.Subject" Cols="115" Rows="4" Resize="TextAreaResize.Vertical" Spellcheck="true" />
                     <FluentTextArea Label="Keywords:" @bind-Value="@metadata.Keywords" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
                     <FluentTextArea Label="Creator:" @bind-Value="@metadata.Creator" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
-                    <FluentTextArea Label="Producer:" @bind-Value="@metadata.Producer" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
+                    <FluentTextArea Label="Producer:" @bind-Value="@metadata.Producer" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Disabled="true" />
                 </FluentStack>
             </FluentTab>
         </FluentTabs>
@@ -173,7 +182,6 @@
     </Footer>
 </FluentPopover>
 
-
 <style>
     .toolbar {
         padding-right: 10px;
@@ -190,7 +198,7 @@
     BlobInProcess? blobInProcess;
     List<Entry> entries = new();
     Metadata metadata = new();
-    PdfEditor pdfEditor = new();
+    IPdfEditor pdfEditor = new PdfEditor_iText();
     Tree<Entry>? tree;
     TreeNode<Entry>? selectedNode;
 
@@ -198,6 +206,7 @@
 
     bool disablePageJump = true;
     bool isConfirmPopoverOpen = false;
+    bool isEditorInitialized = false;
     bool isHelpOverlayOpen = false;
     bool isSaving = false;
     bool showPdfViewer = false;
@@ -210,10 +219,25 @@
     string blobUri = string.Empty;
     string originalFileName = string.Empty;
 
+    private static List<Option<PdfEditorBackendEnum>> backendOptions = Enum.GetValues<PdfEditorBackendEnum>()
+        .Select(x => new Option<PdfEditorBackendEnum> { Value = x, Text = x.ToString(), Selected = x == PdfEditorBackendEnum.iText})
+        .ToList();
+
     private void collapseAll()
     {
         if (tree != null)
             tree.CollapseAll();
+    }
+
+    private void onBackendSelectionChanged(Option<PdfEditorBackendEnum> backendEnum)
+    {
+        pdfEditor = backendEnum.Value switch
+        {
+            PdfEditorBackendEnum.iText => new PdfEditor_iText(),
+            PdfEditorBackendEnum.PdfSharpCore => new PdfEditor_PdfSharpCore(),
+            // PdfEditorBackendEnum.MuPDF => new PdfEditor_MuPDF(),
+            _ => throw new ArgumentException("Invalid enum value: ", backendEnum.Value.ToString()),
+        };
     }
 
     private void onDoubleClick(TreeEventArgs<Entry> e)
@@ -344,6 +368,7 @@
         await CreateBlobUris();
         await InitializePdf();
         showPdfViewer = true;
+        isEditorInitialized = true;
     }
 
     private void addNewEntry()

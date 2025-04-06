@@ -13,12 +13,12 @@ public class Metadata
     {
         return new Dictionary<string, string>()
         {
-            { "title", Title! },
-            { "author", Author! },
-            { "subject", Subject! },
-            { "keywords", Keywords! },
-            { "creator", Creator! },
-            { "produces", Producer! },
+            { "title", Title ?? string.Empty },
+            { "author", Author ?? string.Empty },
+            { "subject", Subject ?? string.Empty },
+            { "keywords", Keywords ?? string.Empty },
+            { "creator", Creator ?? string.Empty },
+            { "producer", Producer ?? string.Empty },
         };
     }
 }

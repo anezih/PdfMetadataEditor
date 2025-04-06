@@ -1,10 +1,11 @@
 ﻿using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Navigation;
+using PdfMetadataEditor.Interface;
 using PdfMetadataEditor.Model;
 
-namespace PdfMetadataEditor;
+namespace PdfMetadataEditor.Backends;
 
-public class PdfEditor
+public class PdfEditor_iText : IPdfEditor
 {
     private MemoryStream outMs = new();
     private PdfDocument? pdfDocument;
@@ -17,7 +18,7 @@ public class PdfEditor
     public void Create(byte[] pdfBytes)
     {
         MemoryStream inMs = new MemoryStream(pdfBytes);
-        
+
         reader = new(inMs);
         writer = new(outMs);
         writer.SetCloseStream(false);
@@ -46,7 +47,7 @@ public class PdfEditor
             return entries;
         PdfOutline rootOutline = pdfDocument.GetOutlines(true);
         var stack = new Stack<(PdfOutline, Entry)>();
-        
+
         foreach (var topLevel in rootOutline.GetAllChildren())
         {
             Entry entry = new Entry
@@ -57,7 +58,7 @@ public class PdfEditor
             entries.Add(entry);
             stack.Push((topLevel, entry));
         }
-        
+
         while (stack.Count > 0)
         {
             var (currentOutline, currentEntry) = stack.Pop();
@@ -84,7 +85,7 @@ public class PdfEditor
             pdfDocument.GetOutlines(true).RemoveOutline();
         pdfDocument.InitializeOutlines();
         PdfOutline rootOutline = pdfDocument.GetOutlines(true);
-        
+
         var stack = new Stack<(PdfOutline, Entry)>();
         foreach (var entry in entries)
         {
@@ -113,9 +114,9 @@ public class PdfEditor
             Author   = docinfo.GetAuthor(),
             Creator  = docinfo.GetCreator(),
             Keywords = docinfo.GetKeywords(),
-            Producer = docinfo.GetProducer(),
             Subject  = docinfo.GetSubject(),
             Title    = docinfo.GetTitle(),
+            Producer = docinfo.GetProducer(),
         };
         return metadata;
     }
@@ -123,11 +124,10 @@ public class PdfEditor
     public void SetPdfMetadata(Metadata metadata)
     {
         var docinfo = pdfDocument!.GetDocumentInfo();
-        
+
         docinfo.SetAuthor(metadata.Author ?? string.Empty);
         docinfo.SetCreator(metadata.Creator ?? string.Empty);
         docinfo.SetKeywords(metadata.Keywords ?? string.Empty);
-        docinfo.SetProducer(metadata.Producer ?? string.Empty);
         docinfo.SetSubject(metadata.Subject ?? string.Empty);
         docinfo.SetTitle(metadata.Title ?? string.Empty);
     }
