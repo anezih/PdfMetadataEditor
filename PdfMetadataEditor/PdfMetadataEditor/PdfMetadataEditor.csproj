@@ -19,8 +19,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.3" PrivateAssets="all" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.11.7" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.11.7" />
-    <PackageReference Include="PdfSharpCore" Version="1.3.67" />
     <PackageReference Include="PublishSPAforGitHubPages.Build" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\PdfSharpCore\PdfSharpCore\PdfSharpCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
