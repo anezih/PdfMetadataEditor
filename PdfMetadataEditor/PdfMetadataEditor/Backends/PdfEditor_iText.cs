@@ -78,7 +78,7 @@ public class PdfEditor_iText : IPdfEditor
         return entries;
     }
 
-    public void SetOutline(List<Entry> entries)
+    public void SetOutline(List<Entry> entries, int pageOffset = 0)
     {
         // remove existing outline
         if (pdfDocument!.HasOutlines())
@@ -90,7 +90,7 @@ public class PdfEditor_iText : IPdfEditor
         foreach (var entry in entries)
         {
             var childOutline = rootOutline.AddOutline(entry.Heading);
-            childOutline.AddDestination(CreateDestinationFromPageNum(entry.PageNo));
+            childOutline.AddDestination(CreateDestinationFromPageNum(entry.PageNo+pageOffset));
             stack.Push((childOutline, entry));
         }
 
@@ -100,7 +100,7 @@ public class PdfEditor_iText : IPdfEditor
             foreach (var subEntry in currentEntry.SubHeadings)
             {
                 var subOutline = currentOutline.AddOutline(subEntry.Heading);
-                subOutline.AddDestination(CreateDestinationFromPageNum(subEntry.PageNo));
+                subOutline.AddDestination(CreateDestinationFromPageNum(subEntry.PageNo+pageOffset));
                 stack.Push((subOutline, subEntry));
             }
         }

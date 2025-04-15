@@ -90,7 +90,7 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
         return outMs.ToArray();
     }
 
-    public void SetOutline(List<Entry> entries)
+    public void SetOutline(List<Entry> entries, int pageOffset = 0)
     {
         var outlines = doc!.Outlines;
         outlines.Clear();
@@ -98,7 +98,7 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
         
         foreach (var entry in entries)
         {
-            var outline = outlines.Add(entry.Heading, GetPdfPageFromPageNumber(entry.PageNo));
+            var outline = outlines.Add(entry.Heading, GetPdfPageFromPageNumber(entry.PageNo+pageOffset));
             stack.Push((outline, entry));
         }
 
@@ -107,7 +107,7 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
             var (currentOutline, currentEntry) = stack.Pop();
             foreach (var subEntry in currentEntry.SubHeadings)
             {
-                var subOutline = currentOutline.Outlines.Add(subEntry.Heading, GetPdfPageFromPageNumber(subEntry.PageNo));
+                var subOutline = currentOutline.Outlines.Add(subEntry.Heading, GetPdfPageFromPageNumber(subEntry.PageNo+pageOffset));
                 stack.Push((subOutline, subEntry));
             }
         }
