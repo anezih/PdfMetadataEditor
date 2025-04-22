@@ -14,6 +14,8 @@ jobs:
     steps:
       # Checkout the code
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       # Install .NET
       - name: Setup .NET
