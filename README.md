@@ -7,7 +7,7 @@ The app consists of two tabs: TOC Editor and Metadata Editor
 ## Table of Contents Editor
 
 - In the TOC (Table of Contents) (or Outline) Editor user can either edit the existing outline or create one from scratch.
-- New nodes at any level can created, shifted under any other node. Simply drag and drop tree nodes in order to change the outline.
+- New nodes at any level can be created, shifted under any other node. Simply drag and drop tree nodes in order to change the outline.
 - Nodes can be removed.
 - Every node's title and destination page can be altered. Doube click on the title text to enter edit mode, Press Esc or Ctrl+Enter to exit.
 
@@ -29,6 +29,8 @@ Available at: https://anezih.github.io/PdfMetadataEditor
 [Ant Design Blazor](https://antblazor.com/en-US/)
 
 [iText7](https://github.com/itext/itext-dotnet)
+
+[PdfSharpCore](https://github.com/ststeiger/PdfSharpCore)
 
 [Blazor.FileAPI](https://github.com/KristofferStrube/Blazor.FileAPI)
 
