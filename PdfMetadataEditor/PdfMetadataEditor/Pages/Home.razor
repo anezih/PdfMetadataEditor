@@ -1,26 +1,43 @@
 ﻿@page "/"
+@using PdfMetadataEditor.Backends
+@using PdfMetadataEditor.Enum
+@using PdfMetadataEditor.Interface
 @using PdfMetadataEditor.Model
+@using System.Text.Json
+@using System.Text.Unicode
+@using System.Text.Encodings.Web
 
 @inject IJSRuntime JS;
 @inject IURLService URL;
+@inject IToastService ToastService;
+
+<FluentToolbar Class="toolbar" id="toolbar-fluent-components">
+    <FluentButton Disabled="tocButtonsDisabled" OnClick="addNewEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkAdd())" Title="New Outline Entry" />
+    <FluentButton Disabled="tocButtonsDisabled" OnClick="deleteEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())" Title="Delete Selected Outline Entry" />
+    <FluentButton id="confirmButton" Disabled="tocButtonsDisabled" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())"
+    BackgroundColor="var(--error)"
+    Title="Delete Outline Tree"
+    @onclick="() => isConfirmPopoverOpen = !isConfirmPopoverOpen" />
+    <FluentButton Disabled="tocButtonsDisabled" OnClick="expandAll" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowExpandAll())" Title="Expand All" />
+    <FluentButton Disabled="tocButtonsDisabled" OnClick="collapseAll" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowCollapseAll())" Title="Collapse All" />
+    <FluentButton OnClick="SaveAndReloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Save())" Title="Save Changes" />
+    <FluentButton OnClick="DownloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Title="Save PDF to Disk" />
+    <FluentButton OnClick="ExportChanges" Appearance="Appearance.Accent">JSON Export</FluentButton>
+    <FluentButton Id="ImportButton" Appearance="Appearance.Accent">JSON Import</FluentButton>
+    <FluentCheckbox @bind-Value=disablePageJump Label="Disable Page Jump" />
+    <FluentInputLabel ForId="i1" Orientation="Orientation.Horizontal">Page Offset</FluentInputLabel>
+    <FluentNumberField Id="i1" Immediate="true" Size="2" @bind-Value=pageOffset />
+    <FluentInputLabel ForId="s1" Orientation="Orientation.Horizontal">Backend</FluentInputLabel>
+    <FluentSelect Width="18%" Id="s1" @bind-Disabled=isEditorInitialized SelectedOptionChanged="onBackendSelectionChanged"
+    Items="@backendOptions"
+    TOption="Option<PdfEditorBackendEnum>"
+    OptionText="@(o => o.Text)"
+    OptionValue="@(o => o.Value.ToString())" />
+    <FluentButton slot="end" OnClick="() => isHelpOverlayOpen = true" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Question())" Title="Help" />
+</FluentToolbar>
 
 <FluentSplitter Orientation="Orientation.Horizontal" BarSize="14" Panel1Size="40%" Panel1MinSize="30%" Panel2MinSize="45%" Style="height: 100%">
     <Panel1>
-        <FluentToolbar Class="toolbar" id="toolbar-fluent-components">
-            <FluentButton Disabled="tocButtonsDisabled" OnClick="addNewEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkAdd())" Title="New Outline Entry" />
-            <FluentButton Disabled="tocButtonsDisabled" OnClick="deleteEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())" Title="Delete Selected Outline Entry" />
-            <FluentButton id="confirmButton" Disabled="tocButtonsDisabled" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())"
-            BackgroundColor="var(--error)"
-            Title="Delete Outline Tree"
-            @onclick="() => isConfirmPopoverOpen = !isConfirmPopoverOpen" />
-            <FluentButton Disabled="tocButtonsDisabled" OnClick="expandAll" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowExpandAll())" Title="Expand All" />
-            <FluentButton Disabled="tocButtonsDisabled" OnClick="collapseAll" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowCollapseAll())" Title="Collapse All" />
-            <FluentButton OnClick="SaveAndReloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Save())" Title="Save Changes" />
-            <FluentButton OnClick="DownloadPdf" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Title="Save PDF to Disk" />
-            <FluentCheckbox @bind-Value=disablePageJump Label="Disable Page Jump" />
-            <FluentButton slot="end" OnClick="() => isHelpOverlayOpen = true" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Question())" Title="Help" />
-        </FluentToolbar>
-
         <FluentTabs OnTabChange="onTabChanged">
             <FluentTab Label="TOC Editor" Icon="@(new Icons.Regular.Size24.DocumentTextLink())" Id="tab-1">
                 <Tree @ref="tree"
@@ -64,7 +81,7 @@
                     <FluentTextArea Label="Subject:" @bind-Value="@metadata.Subject" Cols="115" Rows="4" Resize="TextAreaResize.Vertical" Spellcheck="true" />
                     <FluentTextArea Label="Keywords:" @bind-Value="@metadata.Keywords" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
                     <FluentTextArea Label="Creator:" @bind-Value="@metadata.Creator" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
-                    <FluentTextArea Label="Producer:" @bind-Value="@metadata.Producer" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
+                    <FluentTextArea Label="Producer:" @bind-Value="@metadata.Producer" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Disabled="true" />
                 </FluentStack>
             </FluentTab>
         </FluentTabs>
@@ -100,11 +117,11 @@
 </FluentSplitter>
 
 <FluentOverlay @bind-Visible=@isSaving @key="@isSaving"
-               Opacity="0.4"
-               BackgroundColor="#7c8491"
-               FullScreen="true"
-               Dismissable="false"
-               PreventScroll=true>
+Opacity="0.4"
+BackgroundColor="#7c8491"
+FullScreen="true"
+Dismissable="false"
+PreventScroll=true>
     <ChildContent>
         <FluentLabel Weight="FontWeight.Bolder" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
             Saving Changes...
@@ -113,10 +130,10 @@
 </FluentOverlay>
 
 <FluentOverlay @bind-Visible=@isHelpOverlayOpen
-               Opacity="0.4"
-               FullScreen="false"
-               Dismissable="true"
-               PreventScroll=true>
+Opacity="0.4"
+FullScreen="false"
+Dismissable="true"
+PreventScroll=true>
     <ChildContent>
         <FluentCard Width="850px" Height="425px">
             <FluentLabel Style="padding-bottom: 12px" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.H1">Toolbar Help</FluentLabel>
@@ -173,16 +190,25 @@
     </Footer>
 </FluentPopover>
 
+<FluentInputFile
+DragDropZoneVisible="false"
+Mode="InputFileMode.Stream"
+Multiple="false"
+AnchorId="ImportButton"
+MaximumFileSize="@(10 * 1024 * 1024)"
+Accept=".json"
+OnCompleted="@ImportChanges" />
 
 <style>
     .toolbar {
-        padding-right: 10px;
-        width: 100%;
-        position: sticky;
-        top: 1px;
-        z-index: 5;
-        border: 1px dotted var(--accent-fill-rest);
-        border-radius: 5px;
+    padding-right: 10px;
+    width: 100%;
+    position: sticky;
+    top: 1px;
+    z-index: 5;
+    border: 1px dotted var(--accent-fill-rest);
+    border-radius: 5px;
+    margin-bottom: 8px;
     }
 </style>
 
@@ -190,7 +216,7 @@
     BlobInProcess? blobInProcess;
     List<Entry> entries = new();
     Metadata metadata = new();
-    PdfEditor pdfEditor = new();
+    IPdfEditor pdfEditor = new PdfEditor_iText();
     Tree<Entry>? tree;
     TreeNode<Entry>? selectedNode;
 
@@ -198,22 +224,41 @@
 
     bool disablePageJump = true;
     bool isConfirmPopoverOpen = false;
+    bool isEditorInitialized = false;
     bool isHelpOverlayOpen = false;
     bool isSaving = false;
     bool showPdfViewer = false;
     bool tocButtonsDisabled = false;
 
     int lastPdfPage = 1;
+    int pageOffset = 0;
 
     string lastEditNodeId = string.Empty;
     string baseBlobUri = string.Empty;
     string blobUri = string.Empty;
     string originalFileName = string.Empty;
 
+    private JsonSerializerOptions jsonOptions = new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+
+    private static List<Option<PdfEditorBackendEnum>> backendOptions = Enum.GetValues<PdfEditorBackendEnum>()
+        .Select(x => new Option<PdfEditorBackendEnum> { Value = x, Text = x.ToString(), Selected = x == PdfEditorBackendEnum.iText})
+        .ToList();
+
     private void collapseAll()
     {
         if (tree != null)
             tree.CollapseAll();
+    }
+
+    private void onBackendSelectionChanged(Option<PdfEditorBackendEnum> backendEnum)
+    {
+        pdfEditor = backendEnum.Value switch
+        {
+            PdfEditorBackendEnum.iText => new PdfEditor_iText(),
+            PdfEditorBackendEnum.PdfSharpCore => new PdfEditor_PdfSharpCore(),
+            // PdfEditorBackendEnum.MuPDF => new PdfEditor_MuPDF(),
+            _ => throw new ArgumentException("Invalid enum value: ", backendEnum.Value.ToString()),
+        };
     }
 
     private void onDoubleClick(TreeEventArgs<Entry> e)
@@ -344,6 +389,55 @@
         await CreateBlobUris();
         await InitializePdf();
         showPdfViewer = true;
+        isEditorInitialized = true;
+    }
+
+    private async Task ExportChanges()
+    {
+        ExportModel exportModel = new ExportModel { Entries = entries, Metadata = metadata, PageOffset = pageOffset };
+        byte[] json = JsonSerializer.SerializeToUtf8Bytes<ExportModel>(exportModel, jsonOptions);
+
+        var exportJson = await BlobInProcess.CreateAsync(
+            JS,
+            blobParts: new BlobPart[] { json },
+            options: new() { Type = "text/json" }
+        );
+        string jsonUrl = await URL.CreateObjectURLAsync(exportJson);
+        string date = DateTime.Now.ToString("ddMMyyyy_HHmm");
+        string originalFileNameSafe = string.Join('_', Path.GetFileNameWithoutExtension(originalFileName).Split(Path.GetInvalidFileNameChars()));
+        string downloadName = $"PdfMetadataEditor_{originalFileNameSafe}_{date}.json";
+        await JS.InvokeVoidAsync("downloadFile", downloadName, jsonUrl);
+        await URL.RevokeObjectURLAsync(jsonUrl);
+    }
+
+    private async Task ImportChanges(IEnumerable<FluentInputFileEventArgs> files)
+    {
+        ExportModel? exportModel = null;
+        try
+        {
+            var jsonFile = files.First();
+            if (!string.IsNullOrEmpty(jsonFile.ErrorMessage))
+            {
+                Console.WriteLine($"Error at Json file import: {jsonFile.ErrorMessage}");
+                ToastService.ShowToast(ToastIntent.Error, $"Error at Json file import: {jsonFile.ErrorMessage}");
+                return;
+            }
+            var jsonBytes = new byte[jsonFile.Stream!.Length];
+            await jsonFile.Stream!.ReadExactlyAsync(jsonBytes);
+            exportModel = JsonSerializer.Deserialize<ExportModel>(jsonBytes, jsonOptions);
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"Invalid Json file: {ex.Message}");
+            ToastService.ShowToast(ToastIntent.Error, $"Invalid Json file");
+        }
+        
+        if (exportModel != null)
+        {
+            entries = exportModel.Entries ?? new List<Entry>();
+            metadata = exportModel.Metadata ?? new Metadata();
+            pageOffset = exportModel.PageOffset;
+        }
     }
 
     private void addNewEntry()

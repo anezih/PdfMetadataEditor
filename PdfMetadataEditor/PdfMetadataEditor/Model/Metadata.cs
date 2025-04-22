@@ -1,4 +1,6 @@
-﻿namespace PdfMetadataEditor.Model;
+﻿using System.Text.Json.Serialization;
+
+namespace PdfMetadataEditor.Model;
 
 public class Metadata
 {
@@ -7,18 +9,19 @@ public class Metadata
     public string? Subject { get; set; }
     public string? Keywords { get; set; }
     public string? Creator { get; set; }
+    [JsonIgnore]
     public string? Producer { get; set; }
 
     public Dictionary<string, string> ToDictionary()
     {
         return new Dictionary<string, string>()
         {
-            { "title", Title! },
-            { "author", Author! },
-            { "subject", Subject! },
-            { "keywords", Keywords! },
-            { "creator", Creator! },
-            { "produces", Producer! },
+            { "title", Title ?? string.Empty },
+            { "author", Author ?? string.Empty },
+            { "subject", Subject ?? string.Empty },
+            { "keywords", Keywords ?? string.Empty },
+            { "creator", Creator ?? string.Empty },
+            { "producer", Producer ?? string.Empty },
         };
     }
 }

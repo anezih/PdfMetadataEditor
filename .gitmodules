@@ -1,0 +1,3 @@
+[submodule "PdfSharpCore"]
+	path = PdfSharpCore
+	url = https://github.com/anezih/PdfSharpCore
