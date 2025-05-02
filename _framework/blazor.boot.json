@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "PdfMetadataEditor",
   "resources": {
-    "hash": "sha256-o9i5QJX6wBUSKOzcfgIfOkIFv0aGdo9YfMthf3VzIlc=",
+    "hash": "sha256-Xc7ywLSEbTddfbOlAgxJFRPtKPWSt6FseP9ZRGFqkuw=",
     "fingerprinting": {
       "AntDesign.2cmyez49v6.wasm": "AntDesign.wasm",
       "BouncyCastle.Cryptography.q361xss3xf.wasm": "BouncyCastle.Cryptography.wasm",
@@ -46,7 +46,7 @@
       "netstandard.mizk2ah6ir.wasm": "netstandard.wasm",
       "Newtonsoft.Json.afd7przk0l.wasm": "Newtonsoft.Json.wasm",
       "OneOf.t3wicg8dyw.wasm": "OneOf.wasm",
-      "PdfMetadataEditor.b2w3a2r7sc.wasm": "PdfMetadataEditor.wasm",
+      "PdfMetadataEditor.214w2a9r3a.wasm": "PdfMetadataEditor.wasm",
       "PdfSharpCore.gca0sllsp0.wasm": "PdfSharpCore.wasm",
       "SixLabors.Fonts.gb0wcy9xbo.wasm": "SixLabors.Fonts.wasm",
       "SixLabors.ImageSharp.9znmiqdxzn.wasm": "SixLabors.ImageSharp.wasm",
@@ -123,7 +123,7 @@
       "System.Xml.Linq.mixoc3e4x3.wasm": "System.Xml.Linq.wasm",
       "System.Xml.XDocument.e9iep4dclo.wasm": "System.Xml.XDocument.wasm",
       "dotnet.native.ysimrqonmq.js": "dotnet.native.js",
-      "dotnet.native.66cigrjc7g.wasm": "dotnet.native.wasm",
+      "dotnet.native.84dx0cjkvj.wasm": "dotnet.native.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.runtime.cymp1amu5g.js": "dotnet.runtime.js",
       "icudt_CJK.tjcz0u77k5.dat": "icudt_CJK.dat",
@@ -138,7 +138,7 @@
       "dotnet.runtime.cymp1amu5g.js": "sha256-dCmS9Zx4egtLYSUgTI3R6gMS+Yg8MkzxW1CgEMJKAEw="
     },
     "wasmNative": {
-      "dotnet.native.66cigrjc7g.wasm": "sha256-HprmpIRMAVVV7YmugY9zi/qpiHLfUwWhlf/vSbCJjso="
+      "dotnet.native.84dx0cjkvj.wasm": "sha256-WF9CjRIQ8wKn+YI/RO9tHCcGGf+OCtMhd+MLCts7cTk="
     },
     "icu": {
       "icudt_CJK.tjcz0u77k5.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -189,7 +189,7 @@
       "netstandard.mizk2ah6ir.wasm": "sha256-MtWv7vj+zOnd5b5QfllkuQU4lfLJl5Wk0JLolLPqD50=",
       "Newtonsoft.Json.afd7przk0l.wasm": "sha256-tnRVg8mHL+pVDt02aKcwQPX5oc31mjB9jIEjR9SWbYE=",
       "OneOf.t3wicg8dyw.wasm": "sha256-Cf+eKPAQzxUxZPpZbRtqNO0yAqCv5I5+BoxofgdvGRY=",
-      "PdfMetadataEditor.b2w3a2r7sc.wasm": "sha256-E8c+z5arBF1+/NdK5w1bWk7ot2U4v5UhZxFPVJM1M18=",
+      "PdfMetadataEditor.214w2a9r3a.wasm": "sha256-mimY4iVoMjfmm7qc5rkpMS1ulXNgrtSuxGzN6LOohSo=",
       "PdfSharpCore.gca0sllsp0.wasm": "sha256-YJRRV8PbiYUDolpEge1OYXWzyrNGdCyNWxIU6Ufhmc4=",
       "SixLabors.Fonts.gb0wcy9xbo.wasm": "sha256-nO0cMdetoREVHS9WRFIynanJAZGMg6zukCBa0umLHu4=",
       "SixLabors.ImageSharp.9znmiqdxzn.wasm": "sha256-5SxL4PWqLVo8vGfL5Qz4xgVGH2p6ZoDrJBBUDv/Al+c=",
