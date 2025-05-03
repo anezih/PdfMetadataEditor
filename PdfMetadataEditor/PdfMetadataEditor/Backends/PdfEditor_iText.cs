@@ -15,7 +15,9 @@ public class PdfEditor_iText : IPdfEditor
 
     public bool IsCreated { get; set; } = false;
 
-    public void Create(byte[] pdfBytes)
+    public int LastPageNumber => pdfDocument!.GetNumberOfPages();
+
+    public async Task Create(byte[] pdfBytes)
     {
         MemoryStream inMs = new MemoryStream(pdfBytes);
 
@@ -26,6 +28,8 @@ public class PdfEditor_iText : IPdfEditor
         nameTree = pdfDocument.GetCatalog().GetNameTree(PdfName.Dests);
 
         IsCreated = true;
+
+        await Task.CompletedTask;
     }
 
     private PdfExplicitDestination CreateDestinationFromPageNum(int pageNum)

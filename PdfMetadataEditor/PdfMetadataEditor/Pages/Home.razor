@@ -1,11 +1,11 @@
 ﻿@page "/"
-@using PdfMetadataEditor.Backends
-@using PdfMetadataEditor.Enum
-@using PdfMetadataEditor.Interface
-@using PdfMetadataEditor.Model
+@using System.Text.Encodings.Web
 @using System.Text.Json
 @using System.Text.Unicode
-@using System.Text.Encodings.Web
+@using PdfMetadataEditor.Backends
+@using PdfMetadataEditor.Enums
+@using PdfMetadataEditor.Interface
+@using PdfMetadataEditor.Model
 
 @inject IJSRuntime JS;
 @inject IURLService URL;
@@ -68,7 +68,7 @@
                                 }
                             </GridCol>
                             <GridCol Flex=@("100px")>
-                                <AntDesign.InputNumber @bind-Value="context.DataItem.PageNo" Min="1" PlaceHolder="Page Number" />
+                                <AntDesign.InputNumber @bind-Value="context.DataItem.PageNo" Min="1" Max="pdfEditor.LastPageNumber" PlaceHolder="Page Number" />
                             </GridCol>
                         </GridRow>
                     </TitleTemplate>
@@ -135,7 +135,7 @@ FullScreen="false"
 Dismissable="true"
 PreventScroll=true>
     <ChildContent>
-        <FluentCard Width="850px" Height="425px">
+        <FluentCard Width="850px" Height="575px">
             <FluentLabel Style="padding-bottom: 12px" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.H1">Toolbar Help</FluentLabel>
             <FluentStack Orientation="Orientation.Vertical" >
                 <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
@@ -167,9 +167,32 @@ PreventScroll=true>
                     <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">Saves the PDF document to PC.</FluentLabel>
                 </FluentStack>
                 <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent">JSON Export</FluentButton>
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
+                        Exports toc and metadata fields.
+                    </FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent">JSON Import</FluentButton>
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
+                        Imports the exported json file. This will <b>override</b> the fields at the current tabs.
+                    </FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
                     <FluentCheckbox Value="true" ReadOnly="true" />
                     <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
                         <b>Disable Page Jump</b> Controls whether the PDF viewer will jump to the relevant page when the title is clicked in the TOC editor.
+                    </FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
+                        <b>Page Offset:</b> Adjusts page numbers while saving the file. Useful if the in-book Table of Contents does not
+                        correspond to the scanned PDF pages.
+                    </FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
+                        <b>Backend:</b> Specifies the pdf editor backend. Some backends may be less lenient towards malformed PDF files.
                     </FluentLabel>
                 </FluentStack>
             </FluentStack>
@@ -205,7 +228,7 @@ OnCompleted="@ImportChanges" />
     width: 100%;
     position: sticky;
     top: 1px;
-    z-index: 9999;
+    z-index: 999;
     border: 1px dotted var(--accent-fill-rest);
     border-radius: 5px;
     margin-bottom: 8px;
@@ -241,7 +264,7 @@ OnCompleted="@ImportChanges" />
     private JsonSerializerOptions jsonOptions = new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
 
     private static List<Option<PdfEditorBackendEnum>> backendOptions = Enum.GetValues<PdfEditorBackendEnum>()
-        .Select(x => new Option<PdfEditorBackendEnum> { Value = x, Text = x.ToString(), Selected = x == PdfEditorBackendEnum.iText})
+        .Select(x => new Option<PdfEditorBackendEnum> { Value = x, Text = x.Description(), Selected = x == PdfEditorBackendEnum.iText})
         .ToList();
 
     private void collapseAll()
@@ -256,7 +279,7 @@ OnCompleted="@ImportChanges" />
         {
             PdfEditorBackendEnum.iText => new PdfEditor_iText(),
             PdfEditorBackendEnum.PdfSharpCore => new PdfEditor_PdfSharpCore(),
-            // PdfEditorBackendEnum.MuPDF => new PdfEditor_MuPDF(),
+            PdfEditorBackendEnum.MuPDFjs => new PdfEditor_MuPDFjs(JS),
             _ => throw new ArgumentException("Invalid enum value: ", backendEnum.Value.ToString()),
         };
     }
@@ -349,7 +372,7 @@ OnCompleted="@ImportChanges" />
     private async Task InitializePdf()
     {
         await Task.Yield();
-        pdfEditor.Create(pdfBytes!);
+        await pdfEditor.Create(pdfBytes!);
         metadata = pdfEditor.GetPdfMetadata();
         entries = pdfEditor.GetOutline();
     }
@@ -431,7 +454,7 @@ OnCompleted="@ImportChanges" />
             Console.WriteLine($"Invalid Json file: {ex.Message}");
             ToastService.ShowToast(ToastIntent.Error, $"Invalid Json file");
         }
-        
+
         if (exportModel != null)
         {
             entries = exportModel.Entries ?? new List<Entry>();

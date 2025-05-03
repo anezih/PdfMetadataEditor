@@ -32,6 +32,8 @@ Available at: https://anezih.github.io/PdfMetadataEditor
 
 [PdfSharpCore](https://github.com/ststeiger/PdfSharpCore)
 
+[MuPDF.js](https://github.com/ArtifexSoftware/mupdf.js)
+
 [Blazor.FileAPI](https://github.com/KristofferStrube/Blazor.FileAPI)
 
 [PublishSPAforGitHubPages.Build](https://github.com/jsakamoto/PublishSPAforGitHubPages.Build)
