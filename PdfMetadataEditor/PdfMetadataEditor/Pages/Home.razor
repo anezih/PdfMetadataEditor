@@ -40,6 +40,12 @@
     <Panel1>
         <FluentTabs OnTabChange="onTabChanged">
             <FluentTab Label="TOC Editor" Icon="@(new Icons.Regular.Size24.DocumentTextLink())" Id="tab-1">
+                @if (!showPdfViewer)
+                {
+                    <FluentCard Style="width: 95%; height: 80%; padding: 10px; margin: 10px;">
+                        <FluentIcon Value="@(new Icons.Regular.Size24.TextBulletListTree())" Width="120" Color="Microsoft.FluentUI.AspNetCore.Components.Color.Disabled" />
+                    </FluentCard>
+                }
                 <Tree @ref="tree"
                 DefaultExpandAll
                 Draggable
@@ -112,7 +118,12 @@
         {
             <iframe src="@blobUri" @key="@blobUri" style="width: 95%; height: 80%; margin: 16px" frameborder="0"></iframe>
         }
-
+        else
+        {
+            <FluentCard Style="width: 95%; height: 80%; margin: 16px; display: flex; justify-content: center;">
+                <FluentIcon Value="@(new Icons.Regular.Size32.DocumentPdf())" Width="120" Color="Microsoft.FluentUI.AspNetCore.Components.Color.Disabled" />
+            </FluentCard>
+        }
     </Panel2>
 </FluentSplitter>
 

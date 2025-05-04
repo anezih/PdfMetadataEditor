@@ -42,10 +42,6 @@ public class MupdfDoc : IAsyncDisposable
     public void SetOutline(List<MuOutlineItem> outline)
     {
         ClearOutline();
-        //foreach (var item in outline)
-        //{
-        //    int insertResult = outlineIterator.Invoke<int>("insert", item);
-        //}
         var stack = new Stack<(MuOutlineItem, int)>();
 
         foreach (var item in outline)
@@ -57,7 +53,6 @@ public class MupdfDoc : IAsyncDisposable
         {
             var (currentItem, itemDepth) = stack.Pop();
 
-            // Adjust depth before inserting
             while (currentDepth < itemDepth)
             {
                 outlineIterator.InvokeVoid("down");
