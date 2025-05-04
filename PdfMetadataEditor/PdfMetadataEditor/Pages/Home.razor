@@ -500,7 +500,7 @@ OnCompleted="@ImportChanges" />
                     parentList.Insert
                     (
                         index + 1,
-                        new() { Heading = $"{selectedNode.DataItem.Heading} (Copy)", PageNo = selectedNode.DataItem.PageNo + 1 }
+                        new() { Heading = $"{selectedNode.DataItem.Heading} (Copy)", PageNo = Math.Min(selectedNode.DataItem.PageNo + 1, pdfEditor.LastPageNumber) }
                     );
                     StateHasChanged();
                     return;
