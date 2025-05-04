@@ -11,13 +11,15 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
     private PdfPages? pages;
 
     public bool IsCreated { get; set; } = false;
+    public int LastPageNumber => doc!.Outlines.Count;
 
-    public void Create(byte[] pdfBytes)
+    public async Task Create(byte[] pdfBytes)
     {
         MemoryStream inMs = new MemoryStream(pdfBytes);
         doc = PdfReader.Open(inMs, PdfSharpCore.Pdf.IO.enums.PdfReadAccuracy.Moderate);
         pages = doc.Pages;
         IsCreated = true;
+        await Task.CompletedTask;
     }
 
     public List<Entry> GetOutline()

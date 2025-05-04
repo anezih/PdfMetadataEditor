@@ -19,6 +19,7 @@ Available at: https://anezih.github.io/PdfMetadataEditor
 
 # Screenshots
 
+![PdfMetadataEditor](res/editor-empty.png)
 ![Outline Editor](res/toc-editor.png)
 ![Metadata Editor](res/metadata-editor.png)
 
@@ -31,6 +32,8 @@ Available at: https://anezih.github.io/PdfMetadataEditor
 [iText7](https://github.com/itext/itext-dotnet)
 
 [PdfSharpCore](https://github.com/ststeiger/PdfSharpCore)
+
+[MuPDF.js](https://github.com/ArtifexSoftware/mupdf.js)
 
 [Blazor.FileAPI](https://github.com/KristofferStrube/Blazor.FileAPI)
 
