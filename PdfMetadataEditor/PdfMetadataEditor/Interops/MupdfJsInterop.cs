@@ -8,7 +8,7 @@ public class MupdfJsInterop : IAsyncDisposable
 
     public MupdfJsInterop(IJSRuntime jsRuntime)
     {
-        moduleTask = new Lazy<Task<IJSObjectReference>>(() => jsRuntime.InvokeAsync<IJSObjectReference>("import", "/js/mupdfWrapper.js").AsTask());
+        moduleTask = new Lazy<Task<IJSObjectReference>>(() => jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/mupdfWrapper.js").AsTask());
     }
 
     public async Task<MupdfDoc> Initialize(byte[] data)
