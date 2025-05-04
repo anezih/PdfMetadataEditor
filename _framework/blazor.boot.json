@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "PdfMetadataEditor",
   "resources": {
-    "hash": "sha256-Xc7ywLSEbTddfbOlAgxJFRPtKPWSt6FseP9ZRGFqkuw=",
+    "hash": "sha256-3cS6U4mI4YV4uf+0/rLGZqogFJVGRgpIyom4Dhl7J5g=",
     "fingerprinting": {
       "AntDesign.2cmyez49v6.wasm": "AntDesign.wasm",
       "BouncyCastle.Cryptography.q361xss3xf.wasm": "BouncyCastle.Cryptography.wasm",
@@ -39,14 +39,14 @@
       "Microsoft.Extensions.Logging.wmffdm17ee.wasm": "Microsoft.Extensions.Logging.wasm",
       "Microsoft.Extensions.Options.1s4543dsw0.wasm": "Microsoft.Extensions.Options.wasm",
       "Microsoft.Extensions.Primitives.c4l1ao4ovj.wasm": "Microsoft.Extensions.Primitives.wasm",
-      "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.3k7elgpgo9.wasm": "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.wasm",
+      "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.8mkmclo2wg.wasm": "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.wasm",
       "Microsoft.FluentUI.AspNetCore.Components.y117doe67k.wasm": "Microsoft.FluentUI.AspNetCore.Components.wasm",
       "Microsoft.JSInterop.nectlffdal.wasm": "Microsoft.JSInterop.wasm",
       "Microsoft.JSInterop.WebAssembly.s0bw0921jm.wasm": "Microsoft.JSInterop.WebAssembly.wasm",
       "netstandard.mizk2ah6ir.wasm": "netstandard.wasm",
       "Newtonsoft.Json.afd7przk0l.wasm": "Newtonsoft.Json.wasm",
       "OneOf.t3wicg8dyw.wasm": "OneOf.wasm",
-      "PdfMetadataEditor.214w2a9r3a.wasm": "PdfMetadataEditor.wasm",
+      "PdfMetadataEditor.3wdwbeozz1.wasm": "PdfMetadataEditor.wasm",
       "PdfSharpCore.gca0sllsp0.wasm": "PdfSharpCore.wasm",
       "SixLabors.Fonts.gb0wcy9xbo.wasm": "SixLabors.Fonts.wasm",
       "SixLabors.ImageSharp.9znmiqdxzn.wasm": "SixLabors.ImageSharp.wasm",
@@ -123,7 +123,7 @@
       "System.Xml.Linq.mixoc3e4x3.wasm": "System.Xml.Linq.wasm",
       "System.Xml.XDocument.e9iep4dclo.wasm": "System.Xml.XDocument.wasm",
       "dotnet.native.ysimrqonmq.js": "dotnet.native.js",
-      "dotnet.native.84dx0cjkvj.wasm": "dotnet.native.wasm",
+      "dotnet.native.rb83iylib8.wasm": "dotnet.native.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.runtime.cymp1amu5g.js": "dotnet.runtime.js",
       "icudt_CJK.tjcz0u77k5.dat": "icudt_CJK.dat",
@@ -138,7 +138,7 @@
       "dotnet.runtime.cymp1amu5g.js": "sha256-dCmS9Zx4egtLYSUgTI3R6gMS+Yg8MkzxW1CgEMJKAEw="
     },
     "wasmNative": {
-      "dotnet.native.84dx0cjkvj.wasm": "sha256-WF9CjRIQ8wKn+YI/RO9tHCcGGf+OCtMhd+MLCts7cTk="
+      "dotnet.native.rb83iylib8.wasm": "sha256-GckuZgm/izqU5HjfCE8aqB1n8+Nd4GgiERcTzbzu3oY="
     },
     "icu": {
       "icudt_CJK.tjcz0u77k5.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -182,14 +182,14 @@
       "Microsoft.Extensions.Logging.wmffdm17ee.wasm": "sha256-6BFb9aslSGYW87UdcEUFKLjzeZqNVinRFt+4G1XhBYQ=",
       "Microsoft.Extensions.Options.1s4543dsw0.wasm": "sha256-cecMU96K0jhnY6RHKrgzXWSbEYha3t6yF9SAiEjtR4A=",
       "Microsoft.Extensions.Primitives.c4l1ao4ovj.wasm": "sha256-1PShggkBv8n0ujn6ACtX3SCZGmjrGODuBD3in9bZN+M=",
-      "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.3k7elgpgo9.wasm": "sha256-wyIHC9CcsOYwwRDsFoDXrKcM1M/Sd4jykMQWPvdOd3Y=",
+      "Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.8mkmclo2wg.wasm": "sha256-4BEZSLTFrzxyn9K17bDmzyS2aNocADSyjjOr1aUJuCg=",
       "Microsoft.FluentUI.AspNetCore.Components.y117doe67k.wasm": "sha256-6hGPbPrPYmPRNlqv6RCCwXmiiV0Dm+cD86aREZ/6anI=",
       "Microsoft.JSInterop.nectlffdal.wasm": "sha256-8RpYCNjD9NPAPlE/nyl9F+ml9n5/Ydj0cRepvpZvTI0=",
       "Microsoft.JSInterop.WebAssembly.s0bw0921jm.wasm": "sha256-NNwR0xu2wKvvEIZnSUwKht+/0RJ9ziHW01M66VViIkI=",
       "netstandard.mizk2ah6ir.wasm": "sha256-MtWv7vj+zOnd5b5QfllkuQU4lfLJl5Wk0JLolLPqD50=",
       "Newtonsoft.Json.afd7przk0l.wasm": "sha256-tnRVg8mHL+pVDt02aKcwQPX5oc31mjB9jIEjR9SWbYE=",
       "OneOf.t3wicg8dyw.wasm": "sha256-Cf+eKPAQzxUxZPpZbRtqNO0yAqCv5I5+BoxofgdvGRY=",
-      "PdfMetadataEditor.214w2a9r3a.wasm": "sha256-mimY4iVoMjfmm7qc5rkpMS1ulXNgrtSuxGzN6LOohSo=",
+      "PdfMetadataEditor.3wdwbeozz1.wasm": "sha256-rc623RmkwYHWcL19tvap3k3MEsj7rhLOtgDiKQMbN7U=",
       "PdfSharpCore.gca0sllsp0.wasm": "sha256-YJRRV8PbiYUDolpEge1OYXWzyrNGdCyNWxIU6Ufhmc4=",
       "SixLabors.Fonts.gb0wcy9xbo.wasm": "sha256-nO0cMdetoREVHS9WRFIynanJAZGMg6zukCBa0umLHu4=",
       "SixLabors.ImageSharp.9znmiqdxzn.wasm": "sha256-5SxL4PWqLVo8vGfL5Qz4xgVGH2p6ZoDrJBBUDv/Al+c=",
