@@ -476,7 +476,7 @@ OnCompleted="@ImportChanges" />
 
     private void addNewEntry()
     {
-        if (entries!.Count == 0)
+        if (showPdfViewer && entries!.Count == 0)
         {
             entries.Add(new() { Heading = "Heading 1", PageNo = 1 });
             return;
