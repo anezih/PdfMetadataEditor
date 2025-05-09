@@ -370,22 +370,53 @@ OnCompleted="@ImportChanges" />
             blobParts: new BlobPart[] { pdfBytes! },
             options: new() { Type = "application/pdf" }
         );
+        await RevokeBlobUris();
+        baseBlobUri = await URL.CreateObjectURLAsync(blobInProcess);
+        blobUri = $"{baseBlobUri}";
+    }
+
+    private async Task RevokeBlobUris()
+    {
         if (!string.IsNullOrEmpty(baseBlobUri))
         {
             await URL.RevokeObjectURLAsync(baseBlobUri);
             baseBlobUri = string.Empty;
             blobUri = string.Empty;
         }
-        baseBlobUri = await URL.CreateObjectURLAsync(blobInProcess);
-        blobUri = $"{baseBlobUri}";
     }
 
-    private async Task InitializePdf()
+    private async Task<bool> InitializePdf()
     {
-        await Task.Yield();
-        await pdfEditor.Create(pdfBytes!);
-        metadata = pdfEditor.GetPdfMetadata();
-        entries = pdfEditor.GetOutline();
+        try
+        {
+            await Task.Yield();
+            await pdfEditor.Create(pdfBytes!);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            return false;
+        }
+
+        try
+        {
+            metadata = pdfEditor.GetPdfMetadata();
+        }
+        catch (Exception)
+        {
+            ToastService.ShowToast(ToastIntent.Error, $"Could not parse metadata with the current Pdf Editor Backend, check the console logs.");
+        }
+
+        try
+        {
+            entries = pdfEditor.GetOutline();
+        }
+        catch (Exception)
+        {
+            ToastService.ShowToast(ToastIntent.Error, $"Could not parse outline with the current Pdf Editor Backend, check the console logs.");
+        }
+
+        return true;
     }
 
     private async Task SaveAndReloadPdf()
@@ -398,7 +429,7 @@ OnCompleted="@ImportChanges" />
             pdfEditor.SetOutline(entries);
             pdfBytes = pdfEditor.SavePdf();
             await CreateBlobUris();
-            await InitializePdf();
+            var pdfInitializationResult = await InitializePdf();
             isSaving = false;
         }
     }
@@ -421,9 +452,14 @@ OnCompleted="@ImportChanges" />
         pdfBytes = new byte[pdfFile.Stream!.Length];
         await pdfFile.Stream!.ReadExactlyAsync(pdfBytes);
         await CreateBlobUris();
-        await InitializePdf();
-        showPdfViewer = true;
-        isEditorInitialized = true;
+        var pdfInitializationResult = await InitializePdf();
+        if (!pdfInitializationResult)
+        {
+            await RevokeBlobUris();
+            ToastService.ShowToast(ToastIntent.Error, $"Could not initialize editor with the current Pdf Editor Backend, check the console logs.");
+        }
+        showPdfViewer = pdfInitializationResult;
+        isEditorInitialized = pdfInitializationResult;
     }
 
     private async Task ExportChanges()
