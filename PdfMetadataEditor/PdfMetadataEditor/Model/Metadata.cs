@@ -11,6 +11,8 @@ public class Metadata
     public string? Creator { get; set; }
     [JsonIgnore]
     public string? Producer { get; set; }
+    public DateTime? CreationDate { get; set; }
+    public DateTime? ModificationDate { get; set; }
 
     public Dictionary<string, string> ToDictionary()
     {

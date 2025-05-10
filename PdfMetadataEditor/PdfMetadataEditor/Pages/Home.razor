@@ -88,6 +88,22 @@
                     <FluentTextArea Label="Keywords:" @bind-Value="@metadata.Keywords" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
                     <FluentTextArea Label="Creator:" @bind-Value="@metadata.Creator" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Spellcheck="true" />
                     <FluentTextArea Label="Producer:" @bind-Value="@metadata.Producer" Cols="115" Rows="1" Resize="TextAreaResize.Vertical" Disabled="true" />
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="48">
+                        <FluentStack Orientation="Orientation.Vertical">
+                            <FluentLabel>Creation Date:</FluentLabel>
+                            <FluentStack Orientation="Orientation.Horizontal">
+                                <FluentDatePicker @bind-Value="@metadata.CreationDate" />
+                                <FluentTimePicker @bind-Value="@metadata.CreationDate" />
+                            </FluentStack>
+                        </FluentStack>
+                        <FluentStack Orientation="Orientation.Vertical">
+                            <FluentLabel>Modification Date:</FluentLabel>
+                            <FluentStack Orientation="Orientation.Horizontal">
+                                <FluentDatePicker @bind-Value="@metadata.ModificationDate" />
+                                <FluentTimePicker @bind-Value="@metadata.ModificationDate" />
+                            </FluentStack>
+                        </FluentStack>
+                    </FluentStack>
                 </FluentStack>
             </FluentTab>
         </FluentTabs>

@@ -73,12 +73,14 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
         var docInfo = doc!.Info;
         Metadata metadata = new Metadata
         {
-            Author = docInfo.Author,
-            Creator = docInfo.Creator,
-            Keywords = docInfo.Keywords,
-            Subject = docInfo.Subject,
-            Title = docInfo.Title,
-            Producer = docInfo.Producer,
+            Author           = docInfo.Author,
+            Creator          = docInfo.Creator,
+            Keywords         = docInfo.Keywords,
+            Subject          = docInfo.Subject,
+            Title            = docInfo.Title,
+            Producer         = docInfo.Producer,
+            CreationDate     = docInfo.CreationDate.ToLocalTime(),
+            ModificationDate = docInfo.ModificationDate.ToLocalTime(),
         };
         return metadata;
     }
@@ -118,11 +120,13 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
     public void SetPdfMetadata(Metadata metadata)
     {
         var docInfo = doc!.Info;
-        docInfo.Author = metadata.Author ?? string.Empty;
-        docInfo.Creator = metadata.Creator ?? string.Empty;
-        docInfo.Keywords = metadata.Keywords ?? string.Empty;
-        docInfo.Subject = metadata.Subject ?? string.Empty;
-        docInfo.Title = metadata.Title ?? string.Empty;
+        docInfo.Author           = metadata.Author ?? string.Empty;
+        docInfo.Creator          = metadata.Creator ?? string.Empty;
+        docInfo.Keywords         = metadata.Keywords ?? string.Empty;
+        docInfo.Subject          = metadata.Subject ?? string.Empty;
+        docInfo.Title            = metadata.Title ?? string.Empty;
+        docInfo.CreationDate     = metadata.CreationDate ?? DateTime.Now;
+        docInfo.ModificationDate = metadata.ModificationDate ?? DateTime.Now;
     }
 
     private int GetPageNumberFromPdfPage(PdfPage page)

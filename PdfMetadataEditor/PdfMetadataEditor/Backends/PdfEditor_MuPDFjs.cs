@@ -66,12 +66,14 @@ public class PdfEditor_MuPDFjs : IPdfEditor
     {
         Metadata metadata = new Metadata
         {
-            Author = mupdfDoc?.GetAuthor(),
-            Creator = mupdfDoc?.GetCreator(),
-            Keywords = mupdfDoc?.GetKeywords(),
-            Subject = mupdfDoc?.GetSubject(),
-            Title = mupdfDoc?.GetTitle(),
-            Producer = mupdfDoc?.GetProducer(),
+            Author           = mupdfDoc?.GetAuthor(),
+            Creator          = mupdfDoc?.GetCreator(),
+            Keywords         = mupdfDoc?.GetKeywords(),
+            Subject          = mupdfDoc?.GetSubject(),
+            Title            = mupdfDoc?.GetTitle(),
+            Producer         = mupdfDoc?.GetProducer(),
+            CreationDate     = Utils.FromPdfDate(mupdfDoc?.GetCreationDate()),
+            ModificationDate = Utils.FromPdfDate(mupdfDoc?.GetModificationDate()),
         };
         return metadata;
     }
@@ -116,5 +118,7 @@ public class PdfEditor_MuPDFjs : IPdfEditor
         mupdfDoc?.SetKeywords(metadata.Keywords ?? string.Empty);
         mupdfDoc?.SetSubject(metadata.Subject ?? string.Empty);
         mupdfDoc?.SetTitle(metadata?.Title ?? string.Empty);
+        mupdfDoc?.SetCreationDate(Utils.ToPdfDate(metadata?.CreationDate ?? DateTime.Now));
+        mupdfDoc?.SetModificationDate(Utils.ToPdfDate(metadata?.ModificationDate ?? DateTime.Now));
     }
 }

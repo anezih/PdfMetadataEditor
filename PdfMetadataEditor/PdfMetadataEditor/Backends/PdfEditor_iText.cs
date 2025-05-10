@@ -115,12 +115,14 @@ public class PdfEditor_iText : IPdfEditor
         var docinfo = pdfDocument!.GetDocumentInfo();
         Metadata metadata = new Metadata
         {
-            Author   = docinfo.GetAuthor(),
-            Creator  = docinfo.GetCreator(),
-            Keywords = docinfo.GetKeywords(),
-            Subject  = docinfo.GetSubject(),
-            Title    = docinfo.GetTitle(),
-            Producer = docinfo.GetProducer(),
+            Author           = docinfo.GetAuthor(),
+            Creator          = docinfo.GetCreator(),
+            Keywords         = docinfo.GetKeywords(),
+            Subject          = docinfo.GetSubject(),
+            Title            = docinfo.GetTitle(),
+            Producer         = docinfo.GetProducer(),
+            CreationDate     = Utils.FromPdfDate(docinfo.GetMoreInfo("CreationDate")),
+            ModificationDate = Utils.FromPdfDate(docinfo.GetMoreInfo("ModDate")),
         };
         return metadata;
     }
@@ -134,6 +136,8 @@ public class PdfEditor_iText : IPdfEditor
         docinfo.SetKeywords(metadata.Keywords ?? string.Empty);
         docinfo.SetSubject(metadata.Subject ?? string.Empty);
         docinfo.SetTitle(metadata.Title ?? string.Empty);
+        docinfo.SetMoreInfo("CreationDate", Utils.ToPdfDate(metadata.CreationDate));
+        docinfo.SetMoreInfo("ModDate", Utils.ToPdfDate(metadata.ModificationDate));
     }
 
     public byte[] SavePdf()
