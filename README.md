@@ -13,7 +13,7 @@ The app consists of two tabs: TOC Editor and Metadata Editor
 
 ## Metadata Editor
 
-- Title, Author, Subject, Keywords, Creator and Producer metadata fields can be edited.
+- Title, Author, Subject, Keywords, Creator, Creation Date and Modification Date metadata fields can be edited.
 
 Available at: https://anezih.github.io/PdfMetadataEditor
 

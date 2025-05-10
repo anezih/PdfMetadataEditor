@@ -23,12 +23,16 @@ public class MupdfDoc : IAsyncDisposable
     public string GetKeywords() => docRef.Invoke<string>("getMetaData", "info:Keywords");
     public string GetCreator() => docRef.Invoke<string>("getMetaData", "info:Creator");
     public string GetProducer() => docRef.Invoke<string>("getMetaData", "info:Producer");
+    public string GetCreationDate() => docRef.Invoke<string>("getMetaData", "info:CreationDate");
+    public string GetModificationDate() => docRef.Invoke<string>("getMetaData", "info:ModDate");
 
     public void SetTitle(string title) => docRef.InvokeVoid("setMetaData", "info:Title", title);
     public void SetAuthor(string author) => docRef.InvokeVoid("setMetaData", "info:Author", author);
     public void SetSubject(string subject) => docRef.InvokeVoid("setMetaData", "info:Subject", subject);
     public void SetKeywords(string keywords) => docRef.InvokeVoid("setMetaData", "info:Keywords", keywords);
     public void SetCreator(string creator) => docRef.InvokeVoid("setMetaData", "info:Creator", creator);
+    public void SetCreationDate(string creationDate) => docRef.InvokeVoid("setMetaData", "info:CreationDate", creationDate);
+    public void SetModificationDate(string modificationDate) => docRef.InvokeVoid("setMetaData", "info:ModDate", modificationDate);
 
     #endregion
 
