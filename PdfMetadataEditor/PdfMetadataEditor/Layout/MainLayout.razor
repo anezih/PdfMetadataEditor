@@ -1,13 +1,16 @@
 ﻿@inherits LayoutComponentBase
+@using PdfMetadataEditor.Shared
 
 <FluentLayout>
     <FluentHeader>
         Pdf Metadata Editor
         <FluentSpacer />
         <a href="https://github.com/anezih/PdfMetadataEditor" style="text-decoration:none; color: var(--fill-color);" target="_blank">Source Code</a>
+        <SiteSettings />
     </FluentHeader>
     <FluentStack Class="main" Orientation="Orientation.Horizontal" Width="100%">
         <FluentMenuProvider />
+        <FluentDialogProvider />
         <FluentBodyContent Class="body-content">
             <ErrorBoundary>
                 <ChildContent>

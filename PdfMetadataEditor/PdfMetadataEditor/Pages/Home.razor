@@ -28,7 +28,7 @@
     <FluentInputLabel ForId="i1" Orientation="Orientation.Horizontal">Page Offset</FluentInputLabel>
     <FluentNumberField Id="i1" Immediate="true" Size="2" @bind-Value=pageOffset />
     <FluentInputLabel ForId="s1" Orientation="Orientation.Horizontal">Backend</FluentInputLabel>
-    <FluentSelect Width="18%" Id="s1" @bind-Disabled=isEditorInitialized SelectedOptionChanged="onBackendSelectionChanged"
+    <FluentSelect Width="18%" Id="s1" Class="backendSelect" @bind-Disabled=isEditorInitialized SelectedOptionChanged="onBackendSelectionChanged"
     Items="@backendOptions"
     TOption="Option<PdfEditorBackendEnum>"
     OptionText="@(o => o.Text)"
@@ -255,7 +255,7 @@ OnCompleted="@ImportChanges" />
     width: 100%;
     position: sticky;
     top: 1px;
-    z-index: 999;
+    z-index: 992;
     border: 1px dotted var(--accent-fill-rest);
     border-radius: 5px;
     margin-bottom: 8px;
