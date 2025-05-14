@@ -202,10 +202,11 @@ public partial class Home
             isSaving = true;
             await Task.Delay(1);
             pdfEditor.SetPdfMetadata(metadata);
-            pdfEditor.SetOutline(entries);
+            pdfEditor.SetOutline(entries, pageOffset);
             pdfBytes = pdfEditor.SavePdf();
             await CreateBlobUris();
             var pdfInitializationResult = await InitializePdf();
+            pageOffset = 0;
             isSaving = false;
         }
     }
