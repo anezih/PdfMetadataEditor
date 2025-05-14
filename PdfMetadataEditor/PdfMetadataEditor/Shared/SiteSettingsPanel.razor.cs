@@ -6,16 +6,7 @@ using Microsoft.JSInterop;
 namespace PdfMetadataEditor.Shared;
 public partial class SiteSettingsPanel
 {
-    private DesignThemeModes _mode;
-    public DesignThemeModes Mode
-    {
-        get { return _mode; }
-        set
-        {
-            _mode = value;
-            InvokeAsync(ChangeAntTheme);
-        }
-    }
+    public DesignThemeModes Mode { get; set; }
     public OfficeColor? OfficeColor { get; set; }
 
     [Inject]
@@ -33,19 +24,17 @@ public partial class SiteSettingsPanel
         };
     }
 
-    private async Task ChangeAntTheme()
+    private async Task OnLuminanceChanged(LuminanceChangedEventArgs e)
     {
-        if (Mode == DesignThemeModes.Dark)
+        if (e.IsDark)
         {
             await JSRuntime!.InvokeVoidAsync("changeAntThemeToDark");
+            StateHasChanged();
         }
-        else if (Mode == DesignThemeModes.Light)
+        else
         {
             await JSRuntime!.InvokeVoidAsync("changeAntThemeToLight");
-        }
-        else if (_mode == DesignThemeModes.System)
-        {
-            await JSRuntime!.InvokeVoidAsync("changeAntThemeToLight");
+            StateHasChanged();
         }
     }
 }
