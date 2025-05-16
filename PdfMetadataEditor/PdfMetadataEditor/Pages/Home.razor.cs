@@ -197,7 +197,7 @@ public partial class Home
 
     private async Task SaveAndReloadPdf()
     {
-        if (pdfEditor.IsCreated)
+        if (pdfEditor.IsCreated && PageOffsetSanityCheck())
         {
             isSaving = true;
             await Task.Delay(1);
@@ -285,6 +285,45 @@ public partial class Home
             metadata = exportModel.Metadata ?? new Metadata();
             pageOffset = exportModel.PageOffset;
         }
+    }
+
+    private bool PageOffsetSanityCheck()
+    {
+        if (pageOffset == 0 || entries.Count == 0)
+            return true;
+        int minPage = int.MaxValue;
+        int maxPage = int.MinValue;
+        var stack = new Stack<Entry>();
+        foreach (var entry in entries)
+        {
+            stack.Push(entry);
+        }
+
+        while (stack.Count > 0)
+        {
+            var currentEntry = stack.Pop();
+            minPage = Math.Min(currentEntry.PageNo, minPage);
+            maxPage = Math.Max(currentEntry.PageNo, maxPage);
+
+            foreach (var subEntry in currentEntry.SubHeadings)
+            {
+                stack.Push(subEntry);
+            }
+        }
+
+        if (minPage + pageOffset <= 0)
+        {
+            ToastService!.ShowToast(ToastIntent.Error, $"Applying the page offset will result in the lowest page number dropping below 1.");
+            return false;
+        }
+
+        if (maxPage + pageOffset > pdfEditor.LastPageNumber)
+        {
+            ToastService!.ShowToast(ToastIntent.Error, $"Applying the page offset will result in the highest page number to exceed the total number PDF pages.");
+            return false;
+        }
+
+        return true;
     }
 
     private void addNewEntry()
