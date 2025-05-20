@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using PdfMetadataEditor.Interface;
+﻿using PdfMetadataEditor.Interface;
 using PdfMetadataEditor.Model;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Pdf.IO;

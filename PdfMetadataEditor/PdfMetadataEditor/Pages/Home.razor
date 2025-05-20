@@ -55,14 +55,14 @@
 
                     <TitleTemplate>
                         <AntDesign.GridRow Wrap="true">
-                            <AntDesign.GridCol Flex=@("auto") Id="@context.DataItem.Id">
+                            <AntDesign.GridCol Flex=@("auto")>
                                 @if (lastEditNodeId == context.DataItem.Id)
                                 {
                                     <AntDesign.TextArea OnKeyDown="onEscDown" AutoSize="true" BindOnInput="true" Rows="1" @bind-Value="context.DataItem.Heading" AutoFocus="true" @onblur="() => onEditEnd()" />
                                 }
                                 else
                                 {
-                                    <span @onclick="() => onClickGoToPage(context.DataItem.PageNo)"
+                                    <span id="@context.DataItem.Id" @onclick="() => onClickGoToPage(context.DataItem.PageNo)"
                                     @ondblclick="() => onDoubleClick2(context.DataItem.Id)">
                                         @if (pdfEditor.IsBoldOutlineSupported | pdfEditor.IsItalicOutlineSupported | pdfEditor.IsBoldItalicOutlineSupported)
                                         {

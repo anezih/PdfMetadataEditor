@@ -29,7 +29,6 @@ public partial class Home
     Metadata metadata = new();
     IPdfEditor pdfEditor = new PdfEditor_iText();
 
-    FluentMenu? outlineContextMenu;
     Tree<Entry>? tree;
     TreeNode<Entry>? selectedNode;
 
