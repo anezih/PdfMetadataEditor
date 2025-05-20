@@ -1,4 +1,5 @@
-﻿using PdfMetadataEditor.Interface;
+﻿using Microsoft.Extensions.Logging;
+using PdfMetadataEditor.Interface;
 using PdfMetadataEditor.Model;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Pdf.IO;
@@ -11,6 +12,10 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
     private PdfPages? pages;
 
     public bool IsCreated { get; set; } = false;
+    public bool IsBoldOutlineSupported { get; } = true;
+    public bool IsItalicOutlineSupported { get; } = true;
+    public bool IsBoldItalicOutlineSupported { get; } = true;
+
     public int LastPageNumber => doc!.Outlines.Count;
 
     public async Task Create(byte[] pdfBytes)
@@ -35,7 +40,10 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
             Entry entry = new Entry
             {
                 Heading = topLevel.Title,
-                PageNo = GetPageNumberFromPdfPage(topLevel.DestinationPage)
+                PageNo = GetPageNumberFromPdfPage(topLevel.DestinationPage),
+                IsBold = topLevel.Style == PdfOutlineStyle.Bold,
+                IsItalic = topLevel.Style == PdfOutlineStyle.Italic,
+                IsBoldItalic = topLevel.Style == PdfOutlineStyle.BoldItalic,
             };
             entries.Add(entry);
             stack.Push((topLevel, entry));
@@ -50,6 +58,9 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
                 {
                     Heading = childOutline.Title,
                     PageNo = GetPageNumberFromPdfPage(childOutline.DestinationPage),
+                    IsBold = childOutline.Style == PdfOutlineStyle.Bold,
+                    IsItalic = childOutline.Style == PdfOutlineStyle.Italic,
+                    IsBoldItalic = childOutline.Style == PdfOutlineStyle.BoldItalic,
                 };
                 currentEntry.SubHeadings.Add(childEntry);
                 stack.Push((childOutline, childEntry));
@@ -94,6 +105,14 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
         return outMs.ToArray();
     }
 
+    private PdfOutlineStyle GetPdfOutlineStyle(Entry entry)
+    {
+        var style = !(entry.IsBold | entry.IsItalic | entry.IsBoldItalic)
+            ? PdfOutlineStyle.Regular
+            : (entry.IsBold ? PdfOutlineStyle.Bold : entry.IsItalic ? PdfOutlineStyle.Italic : entry.IsBoldItalic ? PdfOutlineStyle.BoldItalic : PdfOutlineStyle.Regular);
+        return style;
+    }
+
     public void SetOutline(List<Entry> entries, int pageOffset = 0)
     {
         var outlines = doc!.Outlines;
@@ -103,6 +122,7 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
         foreach (var entry in entries)
         {
             var outline = outlines.Add(entry.Heading, GetPdfPageFromPageNumber(entry.PageNo+pageOffset));
+            outline.Style = GetPdfOutlineStyle(entry);
             stack.Push((outline, entry));
         }
 
@@ -112,6 +132,7 @@ public class PdfEditor_PdfSharpCore : IPdfEditor
             foreach (var subEntry in currentEntry.SubHeadings)
             {
                 var subOutline = currentOutline.Outlines.Add(subEntry.Heading, GetPdfPageFromPageNumber(subEntry.PageNo+pageOffset));
+                subOutline.Style = GetPdfOutlineStyle(subEntry);
                 stack.Push((subOutline, subEntry));
             }
         }
