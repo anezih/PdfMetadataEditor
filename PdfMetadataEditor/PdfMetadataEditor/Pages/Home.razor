@@ -38,7 +38,7 @@
                         <FluentIcon Value="@(new Icons.Regular.Size24.TextBulletListTree())" Width="120" Color="Microsoft.FluentUI.AspNetCore.Components.Color.Disabled" />
                     </FluentCard>
                 }
-                <Tree @ref="tree"
+                <AntDesign.Tree @ref="tree"
                 DefaultExpandAll
                 Draggable
                 BlockNode
@@ -54,23 +54,71 @@
                 OnDrop="onDrop">
 
                     <TitleTemplate>
-                        <GridRow Wrap="true">
-                            <GridCol Flex=@("auto")>
+                        <AntDesign.GridRow Wrap="true">
+                            <AntDesign.GridCol Flex=@("auto")>
                                 @if (lastEditNodeId == context.DataItem.Id)
                                 {
                                     <AntDesign.TextArea OnKeyDown="onEscDown" AutoSize="true" BindOnInput="true" Rows="1" @bind-Value="context.DataItem.Heading" AutoFocus="true" @onblur="() => onEditEnd()" />
                                 }
                                 else
                                 {
-                                    <span @onclick="() => onClickGoToPage(context.DataItem.PageNo)" @ondblclick="() => onDoubleClick2(context.DataItem.Id)">@context.DataItem.Heading</span>
+                                    <span id="@context.DataItem.Id" @onclick="() => onClickGoToPage(context.DataItem.PageNo)"
+                                    @ondblclick="() => onDoubleClick2(context.DataItem.Id)">
+                                        @if (pdfEditor.IsBoldOutlineSupported | pdfEditor.IsItalicOutlineSupported | pdfEditor.IsBoldItalicOutlineSupported)
+                                        {
+                                            @if (context.DataItem.IsBold)
+                                            {
+                                                <strong>@context.DataItem.Heading</strong>
+                                            }
+                                            else if (context.DataItem.IsItalic)
+                                            {
+                                                <em>@context.DataItem.Heading</em>
+                                            }
+                                            else if (context.DataItem.IsBoldItalic)
+                                            {
+                                                <strong><em>@context.DataItem.Heading</em></strong>
+                                            }
+                                            else
+                                            {
+                                                @context.DataItem.Heading                                                
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @context.DataItem.Heading
+                                        }
+                                    </span>
+                                    @if (pdfEditor.IsBoldOutlineSupported | pdfEditor.IsItalicOutlineSupported | pdfEditor.IsBoldItalicOutlineSupported)
+                                    {
+                                        <FluentMenu Anchor="@context.DataItem.Id" Anchored="false" UseMenuService="true" Trigger="MouseButton.Right">
+                                            @if (pdfEditor.IsBoldOutlineSupported)
+                                            {
+                                                <FluentMenuItem Role="MenuItemRole.MenuItemCheckbox" Disabled="@(context.DataItem.IsItalic | context.DataItem.IsBoldItalic)" KeepOpen="true" @bind-Checked="@context.DataItem.IsBold">
+                                                    Bold
+                                                </FluentMenuItem>
+                                            }
+                                            @if (pdfEditor.IsItalicOutlineSupported)
+                                            {
+                                                <FluentMenuItem Role="MenuItemRole.MenuItemCheckbox" Disabled="@(context.DataItem.IsBold | context.DataItem.IsBoldItalic)" KeepOpen="true" @bind-Checked="@context.DataItem.IsItalic">
+                                                    Italic
+                                                </FluentMenuItem>
+                                            }
+                                            @if (pdfEditor.IsBoldItalicOutlineSupported)
+                                            {
+                                                <FluentMenuItem Role="MenuItemRole.MenuItemCheckbox" Disabled="@(context.DataItem.IsBold | context.DataItem.IsItalic)" KeepOpen="true" @bind-Checked="@context.DataItem.IsBoldItalic">
+                                                    Bold & Italic
+                                                </FluentMenuItem>
+                                            }
+                                        </FluentMenu>
+                                    }
                                 }
-                            </GridCol>
-                            <GridCol Flex=@("100px")>
+                            </AntDesign.GridCol>
+                            <AntDesign.GridCol Flex=@("100px")>
                                 <AntDesign.InputNumber @bind-Value="context.DataItem.PageNo" Min="1" Max="pdfEditor.LastPageNumber" PlaceHolder="Page Number" />
-                            </GridCol>
-                        </GridRow>
+                            </AntDesign.GridCol>
+                        </AntDesign.GridRow>
                     </TitleTemplate>
-                </Tree>
+                </AntDesign.Tree>
             </FluentTab>
             <FluentTab Label="Metadata Editor" Icon="@(new Icons.Regular.Size24.TextColumnThree())" Id="tab-2">
                 <FluentStack Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Center">
@@ -156,7 +204,7 @@ FullScreen="false"
 Dismissable="true"
 PreventScroll=true>
     <ChildContent>
-        <FluentCard Width="850px" Height="575px">
+        <FluentCard Width="850px" Height="800px">
             <FluentLabel Style="padding-bottom: 12px" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.H1">Toolbar Help</FluentLabel>
             <FluentStack Orientation="Orientation.Vertical" >
                 <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
@@ -215,6 +263,18 @@ PreventScroll=true>
                     <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
                         <b>Backend:</b> Specifies the pdf editor backend. Some backends may be less lenient towards malformed PDF files.
                     </FluentLabel>
+                </FluentStack>
+                <FluentStack Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
+                        <b>Outline heading styling:</b> Outline headings' style can be set via context menu. Possible options are: Bold, Italic and Bold & Italic. Some backends may partially support these styling options.
+                        Support level by different backends can be seen in the table below.
+                    </FluentLabel>
+                    <FluentDataGrid Items="@GetBackendStyleSupport()" AutoFit="true" Style="width: 60%;" >
+                        <PropertyColumn Property="@(p => p.Backend)" />
+                        <PropertyColumn Property="@(p => p.Bold)" />
+                        <PropertyColumn Property="@(p => p.Italic)" />
+                        <PropertyColumn Property="@(p => p.BoldItalic)" />
+                    </FluentDataGrid>
                 </FluentStack>
             </FluentStack>
         </FluentCard>

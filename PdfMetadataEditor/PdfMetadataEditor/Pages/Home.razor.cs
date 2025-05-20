@@ -8,6 +8,7 @@ using PdfMetadataEditor.Backends;
 using PdfMetadataEditor.Enums;
 using PdfMetadataEditor.Interface;
 using PdfMetadataEditor.Model;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
@@ -27,6 +28,7 @@ public partial class Home
     List<Entry> entries = new();
     Metadata metadata = new();
     IPdfEditor pdfEditor = new PdfEditor_iText();
+
     Tree<Entry>? tree;
     TreeNode<Entry>? selectedNode;
 
@@ -285,6 +287,28 @@ public partial class Home
             metadata = exportModel.Metadata ?? new Metadata();
             pageOffset = exportModel.PageOffset;
         }
+    }
+
+    public class BackendStyleSupport()
+    {
+        [Display(Name = "Backend")]
+        public string? Backend { get; set; }
+        [Display(Name = "Bold")]
+        public bool Bold { get; set; }
+        [Display(Name = "Italic")]
+        public bool Italic { get; set; }
+        [Display(Name = "Bold & Italic")]
+        public bool BoldItalic { get; set; }
+    }
+
+    public IQueryable<BackendStyleSupport> GetBackendStyleSupport()
+    {
+        return new[]
+        {
+            new BackendStyleSupport() { Backend = "iText", Bold = true, Italic = true, BoldItalic = false },
+            new BackendStyleSupport() { Backend = "PdfSharpCore", Bold = true, Italic = true, BoldItalic = true },
+            new BackendStyleSupport() { Backend = "MuPDF.js", Bold = false, Italic = false, BoldItalic = false },
+        }.AsQueryable();
     }
 
     private bool PageOffsetSanityCheck()

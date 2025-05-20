@@ -11,6 +11,9 @@ public class PdfEditor_MuPDFjs : IPdfEditor
     private MupdfDoc? mupdfDoc { get; set; }
 
     public bool IsCreated { get; set; } = false;
+    public bool IsBoldOutlineSupported { get; } = false;
+    public bool IsItalicOutlineSupported { get; } = false;
+    public bool IsBoldItalicOutlineSupported { get; } = false;
 
     public int LastPageNumber => mupdfDoc!.LastPageNumber;
 
