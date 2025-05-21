@@ -16,10 +16,10 @@ namespace PdfMetadataEditor.Pages;
 public partial class Home
 {
     [Inject]
-    private IJSRuntime? JS {  get; set; }
+    private IJSRuntime? JS { get; set; }
 
     [Inject]
-    private IURLService? URL {  get; set; }
+    private IURLService? URL { get; set; }
 
     [Inject]
     private IToastService? ToastService { get; set; }
@@ -281,7 +281,7 @@ public partial class Home
             ToastService!.ShowToast(ToastIntent.Error, $"Invalid Json file");
         }
 
-        if (exportModel != null)
+        if (pdfEditor.IsCreated && exportModel != null)
         {
             entries = exportModel.Entries ?? new List<Entry>();
             metadata = exportModel.Metadata ?? new Metadata();
