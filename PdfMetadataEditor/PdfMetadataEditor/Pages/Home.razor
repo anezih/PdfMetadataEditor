@@ -4,6 +4,7 @@
 @using PdfMetadataEditor.Model
 
 <FluentToolbar Class="toolbar" id="toolbar-fluent-components">
+    <FluentButton Id="OpenFileButton" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.FolderOpen())" Title="Open PDF File" />
     <FluentButton Disabled="tocButtonsDisabled" OnClick="addNewEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkAdd())" Title="New Outline Entry" />
     <FluentButton Disabled="tocButtonsDisabled" OnClick="deleteEntry" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())" Title="Delete Selected Outline Entry" />
     <FluentButton id="confirmButton" Disabled="tocButtonsDisabled" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkOff())"
@@ -28,7 +29,7 @@
     <FluentButton slot="end" OnClick="() => isHelpOverlayOpen = true" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.Question())" Title="Help" />
 </FluentToolbar>
 
-<FluentSplitter Orientation="Orientation.Horizontal" BarSize="14" Panel1Size="40%" Panel1MinSize="30%" Panel2MinSize="45%" Style="height: 100%">
+<FluentSplitter Orientation="Orientation.Horizontal" BarSize="14" Panel1Size="40%" Panel1MinSize="30%" Panel2MinSize="45%" Style="height: 95%">
     <Panel1>
         <FluentTabs OnTabChange="onTabChanged">
             <FluentTab Label="TOC Editor" Icon="@(new Icons.Regular.Size24.DocumentTextLink())" Id="tab-1">
@@ -80,7 +81,7 @@
                                             }
                                             else
                                             {
-                                                @context.DataItem.Heading                                                
+                                                @context.DataItem.Heading
                                             }
                                         }
                                         else
@@ -149,30 +150,9 @@
         </FluentTabs>
     </Panel1>
     <Panel2>
-        <FluentInputFile Id="my-file-uploader"
-        Mode="InputFileMode.Stream"
-        Multiple="false"
-        MaximumFileCount="1"
-        MaximumFileSize="@(250*1024*1024)"
-        Accept=".pdf"
-        OnCompleted="@OnFileUploadCompletedAsync"
-        Style="height: 110px; margin-left: 10px">
-            <ChildContent>
-                <label style="margin-top: 10px" for="my-file-uploader">
-                    <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
-                </label>
-
-                <div>
-                    Drag PDF file here you wish to edit,
-                    or <label for="my-file-uploader">browse</label>
-                    for them.
-                    <br />
-                </div>
-            </ChildContent>
-        </FluentInputFile>
         @if (showPdfViewer)
         {
-            <iframe src="@blobUri" @key="@blobUri" style="width: 95%; height: 80%; margin: 16px" frameborder="0"></iframe>
+            <iframe src="@blobUri" @key="@blobUri" style="width: 95%; height: 95%; margin: 16px" frameborder="0"></iframe>
         }
         else
         {
@@ -303,6 +283,16 @@ AnchorId="ImportButton"
 MaximumFileSize="@(10 * 1024 * 1024)"
 Accept=".json"
 OnCompleted="@ImportChanges" />
+
+<FluentInputFile
+DragDropZoneVisible="false"
+Mode="InputFileMode.Stream"
+Multiple="false"
+AnchorId="OpenFileButton"
+MaximumFileCount="1"
+MaximumFileSize="@(250*1024*1024)"
+Accept=".pdf"
+OnCompleted="@OnFileUploadCompletedAsync" />
 
 <style>
     .toolbar {
