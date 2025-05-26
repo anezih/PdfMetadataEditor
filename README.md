@@ -10,6 +10,7 @@ The app consists of two tabs: TOC Editor and Metadata Editor
 - New nodes at any level can be created, shifted under any other node. Simply drag and drop tree nodes in order to change the outline.
 - Nodes can be removed.
 - Every node's title and destination page can be altered. Doube click on the title text to enter edit mode, Press Esc or Ctrl+Enter to exit.
+- Outline headings' style can be set via context menu. Possible options are: Bold, Italic and Bold & Italic. Some backends may partially support these styling options.
 
 ## Metadata Editor
 
