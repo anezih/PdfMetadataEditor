@@ -19,7 +19,6 @@ Available at: https://anezih.github.io/PdfMetadataEditor
 
 # Screenshots
 
-![PdfMetadataEditor](res/editor-empty.png)
 ![Outline Editor](res/toc-editor.png)
 ![Metadata Editor](res/metadata-editor.png)
 
