@@ -13,6 +13,8 @@ public class PdfEditor_iText : IPdfEditor
     private PdfWriter? writer;
     private PdfNameTree? nameTree;
 
+    private const int FLAG_BOLD_ITALIC = 3;
+
     public bool IsCreated { get; set; } = false;
     public bool IsBoldOutlineSupported { get; } = true;
     public bool IsItalicOutlineSupported { get; } = true;
@@ -46,7 +48,6 @@ public class PdfEditor_iText : IPdfEditor
         return pdfDocument!.GetPageNumber((PdfDictionary)dest.GetDestinationPage(nameTree));
     }
 
-    // https://api.itextpdf.com/iText/java/9.2.0/constant-values.html#com.itextpdf.kernel.pdf.PdfOutline.FLAG_BOLD
     public List<Entry> GetOutline()
     {
         List<Entry> entries = new();
@@ -62,9 +63,9 @@ public class PdfEditor_iText : IPdfEditor
             {
                 Heading = topLevel.GetTitle(),
                 PageNo = GetPageNumberFromDestination(topLevel),
-                IsBold = topLevel.GetStyle() == 2,
-                IsItalic = topLevel.GetStyle() == 1,
-                IsBoldItalic = topLevel.GetStyle() == 3,
+                IsBold = topLevel.GetStyle() == PdfOutline.FLAG_BOLD,
+                IsItalic = topLevel.GetStyle() == PdfOutline.FLAG_ITALIC,
+                IsBoldItalic = topLevel.GetStyle() == FLAG_BOLD_ITALIC,
             };
             entries.Add(entry);
             stack.Push((topLevel, entry));
@@ -81,8 +82,9 @@ public class PdfEditor_iText : IPdfEditor
                 {
                     Heading = childOutline.GetTitle(),
                     PageNo = GetPageNumberFromDestination(childOutline),
-                    IsBold = childOutline.GetStyle() == 2,
-                    IsItalic = childOutline.GetStyle() == 1,
+                    IsBold = childOutline.GetStyle() == PdfOutline.FLAG_BOLD,
+                    IsItalic = childOutline.GetStyle() == PdfOutline.FLAG_ITALIC,
+                    IsBoldItalic = childOutline.GetStyle() == FLAG_BOLD_ITALIC,
                 };
                 currentEntry.SubHeadings.Add(childEntry);
                 stack.Push((childOutline, childEntry));
@@ -112,8 +114,7 @@ public class PdfEditor_iText : IPdfEditor
         {
             var childOutline = rootOutline.AddOutline(entry.Heading);
             childOutline.AddDestination(CreateDestinationFromPageNum(entry.PageNo+pageOffset));
-            
-            childOutline.SetStyle(GetPdfOutlineStyle(entry));
+            childOutline.SetStyleEx(GetPdfOutlineStyle(entry));
             stack.Push((childOutline, entry));
         }
 
@@ -124,7 +125,7 @@ public class PdfEditor_iText : IPdfEditor
             {
                 var subOutline = currentOutline.AddOutline(subEntry.Heading);
                 subOutline.AddDestination(CreateDestinationFromPageNum(subEntry.PageNo+pageOffset));
-                subOutline.SetStyle(GetPdfOutlineStyle(subEntry));
+                subOutline.SetStyleEx(GetPdfOutlineStyle(subEntry));
                 stack.Push((subOutline, subEntry));
             }
         }

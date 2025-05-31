@@ -315,7 +315,7 @@ public partial class Home
     {
         return new[]
         {
-            new BackendStyleSupport() { Backend = "iText", Bold = OutlineStyleSupport.ReadWrite, Italic = OutlineStyleSupport.ReadWrite, BoldItalic = OutlineStyleSupport.ReadOnly },
+            new BackendStyleSupport() { Backend = "iText", Bold = OutlineStyleSupport.ReadWrite, Italic = OutlineStyleSupport.ReadWrite, BoldItalic = OutlineStyleSupport.ReadWrite },
             new BackendStyleSupport() { Backend = "PdfSharpCore", Bold = OutlineStyleSupport.ReadWrite, Italic = OutlineStyleSupport.ReadWrite, BoldItalic = OutlineStyleSupport.ReadWrite },
             new BackendStyleSupport() { Backend = "MuPDF.js", Bold = OutlineStyleSupport.None, Italic = OutlineStyleSupport.None, BoldItalic = OutlineStyleSupport.None },
         }.AsQueryable();
