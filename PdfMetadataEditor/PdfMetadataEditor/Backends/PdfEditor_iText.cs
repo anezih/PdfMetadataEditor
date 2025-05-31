@@ -16,7 +16,7 @@ public class PdfEditor_iText : IPdfEditor
     public bool IsCreated { get; set; } = false;
     public bool IsBoldOutlineSupported { get; } = true;
     public bool IsItalicOutlineSupported { get; } = true;
-    public bool IsBoldItalicOutlineSupported { get; } = false;
+    public bool IsBoldItalicOutlineSupported { get; } = true;
 
     public int LastPageNumber => pdfDocument!.GetNumberOfPages();
 
@@ -64,6 +64,7 @@ public class PdfEditor_iText : IPdfEditor
                 PageNo = GetPageNumberFromDestination(topLevel),
                 IsBold = topLevel.GetStyle() == 2,
                 IsItalic = topLevel.GetStyle() == 1,
+                IsBoldItalic = topLevel.GetStyle() == 3,
             };
             entries.Add(entry);
             stack.Push((topLevel, entry));
@@ -92,9 +93,9 @@ public class PdfEditor_iText : IPdfEditor
 
     private int GetPdfOutlineStyle(Entry entry)
     {
-        int style = !(entry.IsBold | entry.IsItalic)
+        int style = !(entry.IsBold | entry.IsItalic | entry.IsBoldItalic)
             ? 0
-            : (entry.IsBold ? 2 : entry.IsItalic ? 1 : 0);
+            : (entry.IsBold ? 2 : entry.IsItalic ? 1 : entry.IsBoldItalic ? 3 : 0);
         return style;
     }
 

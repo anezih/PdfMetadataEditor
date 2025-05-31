@@ -289,25 +289,35 @@ public partial class Home
         }
     }
 
+    public enum OutlineStyleSupport
+    {
+        None = 0,
+        ReadOnly = 1,
+        ReadWrite = 2,
+    }
+
     public class BackendStyleSupport()
     {
         [Display(Name = "Backend")]
         public string? Backend { get; set; }
+        
         [Display(Name = "Bold")]
-        public bool Bold { get; set; }
+        public OutlineStyleSupport Bold { get; set; }
+        
         [Display(Name = "Italic")]
-        public bool Italic { get; set; }
+        public OutlineStyleSupport Italic { get; set; }
+        
         [Display(Name = "Bold & Italic")]
-        public bool BoldItalic { get; set; }
+        public OutlineStyleSupport BoldItalic { get; set; }
     }
 
     public IQueryable<BackendStyleSupport> GetBackendStyleSupport()
     {
         return new[]
         {
-            new BackendStyleSupport() { Backend = "iText", Bold = true, Italic = true, BoldItalic = false },
-            new BackendStyleSupport() { Backend = "PdfSharpCore", Bold = true, Italic = true, BoldItalic = true },
-            new BackendStyleSupport() { Backend = "MuPDF.js", Bold = false, Italic = false, BoldItalic = false },
+            new BackendStyleSupport() { Backend = "iText", Bold = OutlineStyleSupport.ReadWrite, Italic = OutlineStyleSupport.ReadWrite, BoldItalic = OutlineStyleSupport.ReadOnly },
+            new BackendStyleSupport() { Backend = "PdfSharpCore", Bold = OutlineStyleSupport.ReadWrite, Italic = OutlineStyleSupport.ReadWrite, BoldItalic = OutlineStyleSupport.ReadWrite },
+            new BackendStyleSupport() { Backend = "MuPDF.js", Bold = OutlineStyleSupport.None, Italic = OutlineStyleSupport.None, BoldItalic = OutlineStyleSupport.None },
         }.AsQueryable();
     }
 
