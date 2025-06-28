@@ -13,7 +13,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace PdfMetadataEditor.Pages;
-public partial class Home
+public partial class Home : ComponentBase
 {
     [Inject]
     private IJSRuntime? JS { get; set; }
@@ -45,10 +45,16 @@ public partial class Home
     int lastPdfPage = 1;
     int pageOffset = 0;
 
+    public int ViewPortWidth { get; set; } = 850;
+    public int ViewPortHeight { get; set; } = 800;
+
+    private string helpCardKey { get; set; } = $"0x0";
     string lastEditNodeId = string.Empty;
     string baseBlobUri = string.Empty;
     string blobUri = string.Empty;
     string originalFileName = string.Empty;
+
+    private DotNetObjectReference<Home>? objRef;
 
     private JsonSerializerOptions jsonOptions = new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
 
@@ -441,5 +447,36 @@ public partial class Home
         bool isDark = await JS!.InvokeAsync<bool>("isDark");
         if (isDark)
             await JS!.InvokeVoidAsync("changeAntThemeToDark");
+    }
+
+    private void SetHelpCardSize()
+    {
+        helpCardKey = $"{ViewPortWidth}x{ViewPortHeight}";
+    }
+
+    [JSInvokable]
+    public void SetViewPortDimensions(int width, int height)
+    {
+        if (ViewPortWidth == width & ViewPortHeight == height)
+            return;
+        ViewPortHeight = height;
+        ViewPortWidth = width;
+
+        SetHelpCardSize();
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            objRef = DotNetObjectReference.Create(this);
+            await JS!.InvokeVoidAsync("ViewPortChanges.GetDims", objRef);
+        }
+    }
+
+    public void Dispose()
+    {
+        objRef?.Dispose();
     }
 }

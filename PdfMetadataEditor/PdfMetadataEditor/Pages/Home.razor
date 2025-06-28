@@ -184,9 +184,13 @@ FullScreen="false"
 Dismissable="true"
 PreventScroll=true>
     <ChildContent>
-        <FluentCard Width="850px" Height="800px">
+        <FluentCard Width="@($"{Math.Truncate(ViewPortWidth*0.65)}px")" Height="@($"{Math.Truncate(ViewPortHeight*0.825)}px")" @key=helpCardKey>
             <FluentLabel Style="padding-bottom: 12px" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.H1">Toolbar Help</FluentLabel>
             <FluentStack Orientation="Orientation.Vertical" >
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.FolderOpen())" Title="Open PDF File" />
+                    <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">Open PDF File</FluentLabel>
+                </FluentStack>
                 <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
                     <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.BookmarkAdd())" Title="New Outline Entry"></FluentButton>
                     <FluentLabel Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">Adds a new outline node at the same level after the "selected" node.</FluentLabel>
