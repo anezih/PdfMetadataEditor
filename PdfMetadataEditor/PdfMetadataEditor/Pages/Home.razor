@@ -2,6 +2,7 @@
 
 @using PdfMetadataEditor.Enums
 @using PdfMetadataEditor.Model
+@using PdfMetadataEditor.Interops
 
 <FluentToolbar Class="toolbar" id="toolbar-fluent-components">
     <FluentButton Id="OpenFileButton" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size20.FolderOpen())" Title="Open PDF File" />
@@ -147,6 +148,26 @@
                     </FluentStack>
                 </FluentStack>
             </FluentTab>
+            <FluentTab Label="OCR" Icon="@(new Icons.Regular.Size24.ScanText())" Id="tab-3">
+                <FluentStack Orientation="Orientation.Vertical">
+                    <FluentRadioGroup Name="Mode" @bind-Value=recognitionOptions.mode Label="Mode">
+                        <FluentRadio Value="@("speed")">Speed</FluentRadio>
+                        <FluentRadio Value="@("quality")">Quality</FluentRadio>
+                    </FluentRadioGroup>
+                    <FluentSelect TOption="Lang"
+                                  Label="Languages"
+                                  Items="@ScribeRecognitionOptions.ValidLangs"
+                                  Id="ocr-langs"
+                                  Width="15rem"
+                                  Height="300px"
+                                  Multiple="true"
+                                  OptionValue="@(p => p.Code)"
+                                  OptionText="@(p => p.Language)"
+                                  @bind-SelectedOptions="@selectedLangs" />
+                    <FluentLabel Typo="Typography.Body">Selected languages: @(string.Join(", ", selectedLangs?.Select(x => x.Language) ?? []))</FluentLabel>
+                    <FluentButton OnClick="RecognizePdf" Appearance="Appearance.Accent">Recognize</FluentButton>
+                </FluentStack>
+            </FluentTab>
         </FluentTabs>
     </Panel1>
     <Panel2>
@@ -172,7 +193,7 @@ PreventScroll=true>
     <ChildContent>
         <FluentCard>
             <FluentLabel Weight="FontWeight.Bolder" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
-                Saving Changes...
+                @savingMessage
             </FluentLabel>
         </FluentCard>
     </ChildContent>

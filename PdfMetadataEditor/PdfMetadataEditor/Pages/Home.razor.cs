@@ -11,6 +11,7 @@ using PdfMetadataEditor.Model;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using PdfMetadataEditor.Interops;
 
 namespace PdfMetadataEditor.Pages;
 public partial class Home : ComponentBase
@@ -24,35 +25,40 @@ public partial class Home : ComponentBase
     [Inject]
     private IToastService? ToastService { get; set; }
 
-    BlobInProcess? blobInProcess;
-    List<Entry> entries = new();
-    Metadata metadata = new();
-    IPdfEditor pdfEditor = new PdfEditor_iText();
+    private BlobInProcess? blobInProcess;
+    private List<Entry> entries = new();
+    private Metadata metadata = new();
+    private IPdfEditor pdfEditor = new PdfEditor_iText();
+    private Scribe? ocr;
+    private ScribeRecognitionOptions recognitionOptions = new();
+    private IEnumerable<Lang>? selectedLangs;
 
-    Tree<Entry>? tree;
-    TreeNode<Entry>? selectedNode;
+    private Tree<Entry>? tree;
+    private TreeNode<Entry>? selectedNode;
 
-    byte[]? pdfBytes;
+    private byte[]? pdfBytes;
 
-    bool disablePageJump = true;
-    bool isConfirmPopoverOpen = false;
-    bool isEditorInitialized = false;
-    bool isHelpOverlayOpen = false;
-    bool isSaving = false;
-    bool showPdfViewer = false;
-    bool tocButtonsDisabled = false;
+    private bool disablePageJump = true;
+    private bool isConfirmPopoverOpen = false;
+    private bool isEditorInitialized = false;
+    private bool isHelpOverlayOpen = false;
+    private bool isSaving = false;
+    private bool showPdfViewer = false;
+    private bool tocButtonsDisabled = false;
+    private bool isScribeInitialized = false;
 
-    int lastPdfPage = 1;
-    int pageOffset = 0;
+    private int lastPdfPage = 1;
+    private int pageOffset = 0;
 
     public int ViewPortWidth { get; set; } = 850;
     public int ViewPortHeight { get; set; } = 800;
 
     private string helpCardKey { get; set; } = $"0x0";
-    string lastEditNodeId = string.Empty;
-    string baseBlobUri = string.Empty;
-    string blobUri = string.Empty;
-    string originalFileName = string.Empty;
+    private string lastEditNodeId = string.Empty;
+    private string baseBlobUri = string.Empty;
+    private string blobUri = string.Empty;
+    private string originalFileName = string.Empty;
+    private string savingMessage = "Saving Changes...";
 
     private DotNetObjectReference<Home>? objRef;
 
@@ -77,6 +83,21 @@ public partial class Home : ComponentBase
             PdfEditorBackendEnum.MuPDFjs => new PdfEditor_MuPDFjs(JS!),
             _ => throw new ArgumentException("Invalid enum value: ", backendEnum.Value.ToString()),
         };
+    }
+
+    private async Task EnableProgressOverlay(string message)
+    {
+        isSaving = true;
+        savingMessage = message;
+        StateHasChanged();
+        await Task.Delay(1);
+    }
+
+    private async Task DisableProgressOverlay()
+    {
+        isSaving = false;
+        StateHasChanged();
+        await Task.Delay(1);
     }
 
     private void onDoubleClick(TreeEventArgs<Entry> e)
@@ -207,15 +228,14 @@ public partial class Home : ComponentBase
     {
         if (pdfEditor.IsCreated && PageOffsetSanityCheck())
         {
-            isSaving = true;
-            await Task.Delay(1);
+            await EnableProgressOverlay("Saving Changes...");
             pdfEditor.SetPdfMetadata(metadata);
             pdfEditor.SetOutline(entries, pageOffset);
             pdfBytes = pdfEditor.SavePdf();
             await CreateBlobUris();
             var pdfInitializationResult = await InitializePdf();
             pageOffset = 0;
-            isSaving = false;
+            await DisableProgressOverlay();
         }
     }
 
@@ -245,6 +265,8 @@ public partial class Home : ComponentBase
         }
         showPdfViewer = pdfInitializationResult;
         isEditorInitialized = pdfInitializationResult;
+
+        if (ocr != null) await ocr.Terminate();
     }
 
     private async Task ExportChanges()
@@ -447,6 +469,8 @@ public partial class Home : ComponentBase
         bool isDark = await JS!.InvokeAsync<bool>("isDark");
         if (isDark)
             await JS!.InvokeVoidAsync("changeAntThemeToDark");
+        selectedLangs = recognitionOptions.langs
+            .Select(x => ScribeRecognitionOptions.ValidLangs.First(y => y.Code == x));
     }
 
     private void SetHelpCardSize()
@@ -473,6 +497,31 @@ public partial class Home : ComponentBase
             objRef = DotNetObjectReference.Create(this);
             await JS!.InvokeVoidAsync("ViewPortChanges.GetDims", objRef);
         }
+    }
+
+    private async Task CreateScribe()
+    {
+        if (ocr != null) await ocr.Terminate();
+        ScribeJsInterop scribeJsInterop = new(JS!);
+        ocr = await scribeJsInterop.GetScribe();
+        await ocr.Init();
+        isScribeInitialized = true;
+    }
+
+    private async Task RecognizePdf()
+    {
+        await CreateScribe();
+        if (ocr == null || !showPdfViewer || !isScribeInitialized) return;
+        await ocr.ImportFiles(pdfBytes!);
+
+        await EnableProgressOverlay("Performing OCR...");
+        recognitionOptions.langs = selectedLangs?.Select(x => x.Code).ToList() ?? recognitionOptions.langs;
+        await ocr.Recognize(recognitionOptions);
+        pdfBytes = await ocr.ExportData();
+        await CreateBlobUris();
+        var pdfInitializationResult = await InitializePdf();
+        pageOffset = 0;
+        await DisableProgressOverlay();
     }
 
     public void Dispose()
