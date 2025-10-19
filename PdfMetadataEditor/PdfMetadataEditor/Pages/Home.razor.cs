@@ -7,11 +7,12 @@ using Microsoft.JSInterop;
 using PdfMetadataEditor.Backends;
 using PdfMetadataEditor.Enums;
 using PdfMetadataEditor.Interface;
+using PdfMetadataEditor.Interops;
 using PdfMetadataEditor.Model;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using PdfMetadataEditor.Interops;
 
 namespace PdfMetadataEditor.Pages;
 public partial class Home : ComponentBase
@@ -46,6 +47,7 @@ public partial class Home : ComponentBase
     private bool showPdfViewer = false;
     private bool tocButtonsDisabled = false;
     private bool isScribeInitialized = false;
+    private bool isRecognized = false;
 
     private int lastPdfPage = 1;
     private int pageOffset = 0;
@@ -267,6 +269,7 @@ public partial class Home : ComponentBase
         isEditorInitialized = pdfInitializationResult;
 
         if (ocr != null) await ocr.Terminate();
+        isRecognized = false;
     }
 
     private async Task ExportChanges()
@@ -510,6 +513,8 @@ public partial class Home : ComponentBase
 
     private async Task RecognizePdf()
     {
+        long startTime = Stopwatch.GetTimestamp();
+
         await CreateScribe();
         if (ocr == null || !showPdfViewer || !isScribeInitialized) return;
         await ocr.ImportFiles(pdfBytes!);
@@ -521,6 +526,27 @@ public partial class Home : ComponentBase
         await CreateBlobUris();
         var pdfInitializationResult = await InitializePdf();
         pageOffset = 0;
+        isRecognized = true;
+
+        TimeSpan elapsedTime = Stopwatch.GetElapsedTime(startTime);
+        Console.WriteLine($"Total seconds: {(int)elapsedTime.TotalSeconds}");
+        string msg = $"Performed OCR in {(int)elapsedTime.TotalMinutes} minute(s) {elapsedTime.Seconds} seconds.";
+        await DisableProgressOverlay();
+        ToastService!.ShowToast(ToastIntent.Info, msg, timeout: 60_000);
+    }
+
+    private async Task OcrSaveAsHandler(MenuChangeEventArgs args)
+    {
+        if (ocr == null) return;
+        if (!isRecognized)
+        {
+            ToastService!.ShowToast(ToastIntent.Warning, $"PDF text is not available yet. Use the \"Recognize\" button first.");
+            return;
+        }
+        string format = args.Id!;
+        await EnableProgressOverlay($"Saving As {format}...");
+        string fileName = $"{Path.GetFileNameWithoutExtension(originalFileName)}.{format}";
+        await ocr.Download(format, fileName);
         await DisableProgressOverlay();
     }
 

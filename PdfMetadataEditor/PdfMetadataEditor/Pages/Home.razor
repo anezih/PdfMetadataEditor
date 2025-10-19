@@ -165,7 +165,16 @@
                                   OptionText="@(p => p.Language)"
                                   @bind-SelectedOptions="@selectedLangs" />
                     <FluentLabel Typo="Typography.Body">Selected languages: @(string.Join(", ", selectedLangs?.Select(x => x.Language) ?? []))</FluentLabel>
-                    <FluentButton OnClick="RecognizePdf" Appearance="Appearance.Accent">Recognize</FluentButton>
+                    <FluentStack Orientation="Orientation.Horizontal">
+                        <FluentButton OnClick="RecognizePdf" Appearance="Appearance.Accent">Recognize</FluentButton>
+                        <FluentMenuButton Appearance="Appearance.Accent" Text="Save As" OnMenuChanged="OcrSaveAsHandler">
+                            <FluentMenuItem Id="hocr">hOCR</FluentMenuItem>
+                            <FluentMenuItem Id="docx">Docx</FluentMenuItem>
+                            <FluentMenuItem Id="xlsx">Xlsx</FluentMenuItem>
+                            <FluentMenuItem Id="txt">Txt</FluentMenuItem>
+                            <FluentMenuItem Id="text">Text</FluentMenuItem>
+                        </FluentMenuButton>
+                    </FluentStack>
                 </FluentStack>
             </FluentTab>
         </FluentTabs>

@@ -36,6 +36,11 @@ public class Scribe : IAsyncDisposable
         await _ref.InvokeVoidAsync("recognize", scribeRecognitionOptions);
     }
 
+    public async Task Download(string format, string fileName, int minPage = 0, int maxPage = -1)
+    {
+        await _ref.InvokeVoidAsync("download", format, fileName, minPage, maxPage);
+    }
+
     public async Task Terminate() => await _ref.InvokeVoidAsync("terminate");
 
     public async ValueTask DisposeAsync() => await Terminate();
