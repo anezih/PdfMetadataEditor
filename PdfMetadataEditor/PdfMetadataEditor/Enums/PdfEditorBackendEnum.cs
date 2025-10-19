@@ -1,14 +1,13 @@
 ﻿using System.ComponentModel;
 
-namespace PdfMetadataEditor.Enums
+namespace PdfMetadataEditor.Enums;
+
+public enum PdfEditorBackendEnum
 {
-    public enum PdfEditorBackendEnum
-    {
-        iText = 0,
+    iText = 0,
 
-        PdfSharpCore = 1,
+    PdfSharpCore = 1,
 
-        [Description("MuPDF.js")]
-        MuPDFjs = 2,
-    }
+    [Description("MuPDF.js")]
+    MuPDFjs = 2,
 }
