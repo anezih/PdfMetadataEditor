@@ -26,6 +26,7 @@ Available at: https://anezih.github.io/PdfMetadataEditor
 
 ![Outline Editor](res/toc-editor.png)
 ![Metadata Editor](res/metadata-editor.png)
+![OCR](res/ocr-tab.png)
 
 # Credits
 
