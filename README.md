@@ -2,7 +2,7 @@
 
 Simple Blazor WebAssembly App to Edit PDF Metadata
 
-The app consists of two tabs: TOC Editor and Metadata Editor
+The app consists of three tabs: TOC Editor, Metadata Editor and OCR tab.
 
 ## Table of Contents Editor
 
@@ -15,6 +15,10 @@ The app consists of two tabs: TOC Editor and Metadata Editor
 ## Metadata Editor
 
 - Title, Author, Subject, Keywords, Creator, Creation Date and Modification Date metadata fields can be edited.
+
+## OCR
+
+- Allows user to perform OCR on the loaded PDF file.
 
 Available at: https://anezih.github.io/PdfMetadataEditor
 
@@ -38,3 +42,5 @@ Available at: https://anezih.github.io/PdfMetadataEditor
 [Blazor.FileAPI](https://github.com/KristofferStrube/Blazor.FileAPI)
 
 [PublishSPAforGitHubPages.Build](https://github.com/jsakamoto/PublishSPAforGitHubPages.Build)
+
+[scribe.js](https://github.com/scribeocr/scribe.js)
