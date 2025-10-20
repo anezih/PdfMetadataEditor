@@ -1,7 +1,8 @@
 ﻿import scribe from '../scribejs/scribe.js'
 
-export function getScribe() {
+export function getScribe(workerN) {
     scribe.opt.displayMode = "invis";
+    scribe.opt.workerN = workerN
     return scribe;
 }
 
