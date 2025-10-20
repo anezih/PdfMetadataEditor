@@ -48,9 +48,11 @@ public partial class Home : ComponentBase
     private bool tocButtonsDisabled = false;
     private bool isScribeInitialized = false;
     private bool isRecognized = false;
+    private bool isScribeWorkerSliderDisabled = false;
 
     private int lastPdfPage = 1;
     private int pageOffset = 0;
+    private int scribeWorkerN = 6;
 
     public int ViewPortWidth { get; set; } = 850;
     public int ViewPortHeight { get; set; } = 800;
@@ -89,8 +91,8 @@ public partial class Home : ComponentBase
 
     private async Task EnableProgressOverlay(string message)
     {
-        isSaving = true;
         savingMessage = message;
+        isSaving = true;
         StateHasChanged();
         await Task.Delay(1);
     }
@@ -269,6 +271,7 @@ public partial class Home : ComponentBase
         isEditorInitialized = pdfInitializationResult;
 
         if (ocr != null) await ocr.Terminate();
+        isScribeWorkerSliderDisabled = false;
         isRecognized = false;
     }
 
@@ -506,8 +509,9 @@ public partial class Home : ComponentBase
     {
         if (ocr != null) await ocr.Terminate();
         ScribeJsInterop scribeJsInterop = new(JS!);
-        ocr = await scribeJsInterop.GetScribe();
+        ocr = await scribeJsInterop.GetScribe(scribeWorkerN);
         await ocr.Init();
+        isScribeWorkerSliderDisabled = true;
         isScribeInitialized = true;
     }
 

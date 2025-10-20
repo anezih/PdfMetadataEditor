@@ -149,11 +149,22 @@
                 </FluentStack>
             </FluentTab>
             <FluentTab Label="OCR" Icon="@(new Icons.Regular.Size24.ScanText())" Id="tab-3">
-                <FluentStack Orientation="Orientation.Vertical">
+                <FluentStack Orientation="Orientation.Vertical" HorizontalGap="20">
                     <FluentRadioGroup Name="Mode" @bind-Value=recognitionOptions.mode Label="Mode">
                         <FluentRadio Value="@("speed")">Speed</FluentRadio>
                         <FluentRadio Value="@("quality")">Quality</FluentRadio>
                     </FluentRadioGroup>
+                    <div style="width: 40%">
+                        <FluentSlider Label="Worker Threads" Min="1" Max="6" Step="1" Disabled=@isScribeWorkerSliderDisabled @bind-Value=@scribeWorkerN>
+                            <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                            <FluentSliderLabel Position="2">2</FluentSliderLabel>
+                            <FluentSliderLabel Position="3">3</FluentSliderLabel>
+                            <FluentSliderLabel Position="4">4</FluentSliderLabel>
+                            <FluentSliderLabel Position="5">5</FluentSliderLabel>
+                            <FluentSliderLabel Position="6">6</FluentSliderLabel>
+                        </FluentSlider>
+                    </div>
+                    <FluentSpacer Width="50" />
                     <FluentSelect TOption="Lang"
                                   Label="Languages"
                                   Items="@ScribeRecognitionOptions.ValidLangs"
