@@ -13,10 +13,10 @@ public class ScribeJsInterop
         this.jsRuntime = jsRuntime;
     }
 
-    public async Task<Scribe> GetScribe(int workerN = 6)
+    public async Task<Scribe> GetScribe<T>(DotNetObjectReference<T> dotNetObjectReference, int workerN = 6) where T : class
     {
         var module = await moduleTask.Value;
-        var obj = await module.InvokeAsync<IJSInProcessObjectReference>("getScribe", workerN);
+        var obj = await module.InvokeAsync<IJSInProcessObjectReference>("getScribe", workerN, dotNetObjectReference);
         return new Scribe(obj, module);
     }
 }

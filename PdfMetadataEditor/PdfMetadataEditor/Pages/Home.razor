@@ -211,10 +211,20 @@ FullScreen="true"
 Dismissable="false"
 PreventScroll=true>
     <ChildContent>
-        <FluentCard>
-            <FluentLabel Weight="FontWeight.Bolder" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
+        <FluentCard Width="40">
+            <FluentLabel Alignment=HorizontalAlignment.Center Weight="FontWeight.Bolder" Typo="Microsoft.FluentUI.AspNetCore.Components.Typography.Body">
                 @savingMessage
+                @if (!string.IsNullOrEmpty(savingMessage2))
+                {
+                    <br />
+                    @savingMessage2
+                }
             </FluentLabel>
+            @if (isScribeProgressBarVisible)
+            {
+                <FluentSpacer Width="40" />
+            }
+            <FluentProgress Stroke="ProgressStroke.Large" @bind-Visible=@isScribeProgressBarVisible @bind-Value=@scribeProgress Max=@(scribeProgressMax * 2) />
         </FluentCard>
     </ChildContent>
 </FluentOverlay>

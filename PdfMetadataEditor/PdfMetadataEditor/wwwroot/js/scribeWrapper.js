@@ -1,28 +1,34 @@
 ﻿import scribe from '../scribejs/scribe.js'
 
-export function getScribe(workerN) {
-    scribe.opt.displayMode = "invis";
-    scribe.opt.workerN = workerN
-    return scribe;
-}
+var _objRef;
 
 function ToArrayOfArrayBuffer(data) {
     let buffer;
 
-    if (data instanceof ArrayBuffer)
-    {
+    if (data instanceof ArrayBuffer) {
         buffer = data;
     }
-    else if (ArrayBuffer.isView(data))
-    {
+    else if (ArrayBuffer.isView(data)) {
         buffer = data.buffer;
     }
-    else
-    {
+    else {
         throw new TypeError("Expected byte[] like object.");
     }
-
     return [buffer];
+}
+
+function ProgressHandler(msg) {
+    if (_objRef != null) {
+        _objRef.invokeMethodAsync("OcrProgressHandler", msg.n, msg.type, msg.info.engineName);
+    }
+}
+
+export function getScribe(workerN, dotnetObjRef) {
+    _objRef = dotnetObjRef;
+    scribe.opt.displayMode = "invis";
+    scribe.opt.workerN = workerN
+    scribe.opt.progressHandler = ProgressHandler;
+    return scribe;
 }
 
 export function ImportPdf(pdfData) {

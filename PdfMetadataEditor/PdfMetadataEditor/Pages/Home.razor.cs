@@ -49,10 +49,15 @@ public partial class Home : ComponentBase
     private bool isScribeInitialized = false;
     private bool isRecognized = false;
     private bool isScribeWorkerSliderDisabled = false;
+    private bool isScribeProgressBarVisible = false;
 
     private int lastPdfPage = 1;
     private int pageOffset = 0;
     private int scribeWorkerN = 6;
+    private int scribeConvertProgress = 0;
+    private int scribeExportProgress = 0;
+    private int scribeProgress { get; set; } = 0;
+    private int scribeProgressMax => pdfEditor.LastPageNumber;
 
     public int ViewPortWidth { get; set; } = 850;
     public int ViewPortHeight { get; set; } = 800;
@@ -63,6 +68,7 @@ public partial class Home : ComponentBase
     private string blobUri = string.Empty;
     private string originalFileName = string.Empty;
     private string savingMessage = "Saving Changes...";
+    private string savingMessage2 = "";
 
     private DotNetObjectReference<Home>? objRef;
 
@@ -496,6 +502,25 @@ public partial class Home : ComponentBase
         StateHasChanged();
     }
 
+    [JSInvokable]
+    public void OcrProgressHandler(int n, string type, string engineName)
+    {
+        if (type == "convert" && engineName != "pdf")
+        {
+            scribeProgress++;
+            scribeConvertProgress++;
+            savingMessage2 = $"(Recognized page {scribeConvertProgress}/{pdfEditor.LastPageNumber})";
+            StateHasChanged();
+        }
+        else if (type == "export")
+        {
+            scribeProgress++;
+            scribeExportProgress++;
+            savingMessage2 = $"(Saving page {scribeExportProgress}/{pdfEditor.LastPageNumber})";
+            StateHasChanged();
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -509,7 +534,7 @@ public partial class Home : ComponentBase
     {
         if (ocr != null) await ocr.Terminate();
         ScribeJsInterop scribeJsInterop = new(JS!);
-        ocr = await scribeJsInterop.GetScribe(scribeWorkerN);
+        ocr = await scribeJsInterop.GetScribe(objRef!, scribeWorkerN);
         await ocr.Init();
         isScribeWorkerSliderDisabled = true;
         isScribeInitialized = true;
@@ -523,9 +548,12 @@ public partial class Home : ComponentBase
         if (ocr == null || !showPdfViewer || !isScribeInitialized) return;
         await ocr.ImportFiles(pdfBytes!);
 
+        isScribeProgressBarVisible = true;
+        StateHasChanged();
         await EnableProgressOverlay("Performing OCR...");
         recognitionOptions.langs = selectedLangs?.Select(x => x.Code).ToList() ?? recognitionOptions.langs;
         await ocr.Recognize(recognitionOptions);
+        await Task.Yield();
         pdfBytes = await ocr.ExportData();
         await CreateBlobUris();
         var pdfInitializationResult = await InitializePdf();
@@ -536,6 +564,11 @@ public partial class Home : ComponentBase
         Console.WriteLine($"Total seconds: {(int)elapsedTime.TotalSeconds}");
         string msg = $"Performed OCR in {(int)elapsedTime.TotalMinutes} minute(s) {elapsedTime.Seconds} seconds.";
         await DisableProgressOverlay();
+        isScribeProgressBarVisible = false;
+        scribeProgress = 0;
+        scribeConvertProgress = 0;
+        scribeExportProgress = 0;
+        savingMessage2 = string.Empty;
         ToastService!.ShowToast(ToastIntent.Info, msg, timeout: 60_000);
     }
 
