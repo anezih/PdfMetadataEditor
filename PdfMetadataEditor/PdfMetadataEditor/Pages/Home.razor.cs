@@ -521,6 +521,21 @@ public partial class Home : ComponentBase
         }
     }
 
+    private void OcrProgressInit()
+    {
+        isScribeProgressBarVisible = true;
+        StateHasChanged();
+    }
+
+    private void OcrProgressReset()
+    {
+        isScribeProgressBarVisible = false;
+        scribeProgress = 0;
+        scribeConvertProgress = 0;
+        scribeExportProgress = 0;
+        savingMessage2 = string.Empty;
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -548,8 +563,7 @@ public partial class Home : ComponentBase
         if (ocr == null || !showPdfViewer || !isScribeInitialized) return;
         await ocr.ImportFiles(pdfBytes!);
 
-        isScribeProgressBarVisible = true;
-        StateHasChanged();
+        OcrProgressInit();
         await EnableProgressOverlay("Performing OCR...");
         recognitionOptions.langs = selectedLangs?.Select(x => x.Code).ToList() ?? recognitionOptions.langs;
         await ocr.Recognize(recognitionOptions);
@@ -564,11 +578,7 @@ public partial class Home : ComponentBase
         Console.WriteLine($"Total seconds: {(int)elapsedTime.TotalSeconds}");
         string msg = $"Performed OCR in {(int)elapsedTime.TotalMinutes} minute(s) {elapsedTime.Seconds} seconds.";
         await DisableProgressOverlay();
-        isScribeProgressBarVisible = false;
-        scribeProgress = 0;
-        scribeConvertProgress = 0;
-        scribeExportProgress = 0;
-        savingMessage2 = string.Empty;
+        OcrProgressReset();
         ToastService!.ShowToast(ToastIntent.Info, msg, timeout: 60_000);
     }
 
@@ -581,10 +591,12 @@ public partial class Home : ComponentBase
             return;
         }
         string format = args.Id!;
+        OcrProgressInit();
         await EnableProgressOverlay($"Saving As {format}...");
         string fileName = $"{Path.GetFileNameWithoutExtension(originalFileName)}.{format}";
         await ocr.Download(format, fileName);
         await DisableProgressOverlay();
+        OcrProgressReset();
     }
 
     public void Dispose()
